@@ -1,0 +1,25 @@
+{
+  "num_samples": 2000,
+  "num_classes": 8,
+  "feature_vector_size": 121,
+  "feature_source": "processed_landmarks",
+  "split_strategy": "stratified_random_70_30",
+  "overfit_note": "Accuracy 1.0 on this split means the current collected dataset is easy/separable. For real generalization, collect more samples across lighting, distance, hand angle, left/right hands, backgrounds, and different users.",
+  "train_samples": 1400,
+  "test_samples": 600,
+  "best_model_name": "linear_svm_c0_15",
+  "best_cv_accuracy": 1.0,
+  "train_accuracy": 1.0,
+  "test_accuracy": 1.0,
+  "generalization_gap": 0.0,
+  "class_counts": {
+    "fist": 250,
+    "one_finger": 250,
+    "open_hand": 250,
+    "three_down": 250,
+    "three_left": 250,
+    "three_right": 250,
+    "three_up": 250,
+    "two_fingers": 250
+  }
+}

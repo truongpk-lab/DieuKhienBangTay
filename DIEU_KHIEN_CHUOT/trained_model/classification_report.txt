@@ -1,0 +1,14 @@
+              precision    recall  f1-score   support
+
+        fist     1.0000    1.0000    1.0000        75
+  one_finger     1.0000    1.0000    1.0000        75
+   open_hand     1.0000    1.0000    1.0000        75
+  three_down     1.0000    1.0000    1.0000        75
+  three_left     1.0000    1.0000    1.0000        75
+ three_right     1.0000    1.0000    1.0000        75
+    three_up     1.0000    1.0000    1.0000        75
+ two_fingers     1.0000    1.0000    1.0000        75
+
+    accuracy                         1.0000       600
+   macro avg     1.0000    1.0000    1.0000       600
+weighted avg     1.0000    1.0000    1.0000       600

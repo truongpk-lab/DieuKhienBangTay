@@ -1,0 +1,5 @@
+model_name,cv_mean_accuracy,cv_std_accuracy
+linear_svm_c0_15,1.0,0.0
+linear_svm_c0_35,1.0,0.0
+logistic_l2_c0_35,0.998571,0.002857
+rbf_svm_conservative,0.996429,0.005533

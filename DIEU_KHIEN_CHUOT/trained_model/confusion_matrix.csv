@@ -1,0 +1,9 @@
+label,fist,one_finger,open_hand,three_down,three_left,three_right,three_up,two_fingers
+fist,75,0,0,0,0,0,0,0
+one_finger,0,75,0,0,0,0,0,0
+open_hand,0,0,75,0,0,0,0,0
+three_down,0,0,0,75,0,0,0,0
+three_left,0,0,0,0,75,0,0,0
+three_right,0,0,0,0,0,75,0,0
+three_up,0,0,0,0,0,0,75,0
+two_fingers,0,0,0,0,0,0,0,75

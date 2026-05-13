@@ -1,0 +1,10 @@
+{
+  "fist": 0,
+  "one_finger": 1,
+  "open_hand": 2,
+  "three_down": 3,
+  "three_left": 4,
+  "three_right": 5,
+  "three_up": 6,
+  "two_fingers": 7
+}

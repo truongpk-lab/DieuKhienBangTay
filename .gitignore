@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local/generated datasets are large; commit code and trained model only.
+DIEU_KHIEN_CHUOT/dataset_hand_mouse/
+DIEU_KHIEN_CHUOT/processed_dataset/
