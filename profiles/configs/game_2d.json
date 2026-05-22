@@ -1,0 +1,59 @@
+{
+  "id": "game_2d",
+  "name": "Game 2D",
+  "description": "Dung cho thao tac chuot nhanh va phim dieu khien co ban.",
+  "mouse": {
+    "speed": 2.5,
+    "sensitivity": 2.3,
+    "smoothing": 0.4,
+    "dead_zone": 0.003,
+    "max_step": 110
+  },
+  "gesture_filter": {
+    "prediction_buffer": 5,
+    "stable_min_count": 3,
+    "click_cooldown": 0.28,
+    "action_cooldown": 0.35
+  },
+  "functions": [
+    {
+      "id": "aim",
+      "name": "Di chuyen con tro",
+      "gesture_event": "hand_move",
+      "action": "mouse.move"
+    },
+    {
+      "id": "primary_action",
+      "name": "Hanh dong chinh",
+      "gesture_event": "pinch_tap",
+      "action": "mouse.left_click"
+    },
+    {
+      "id": "secondary_action",
+      "name": "Hanh dong phu",
+      "gesture_event": "two_finger_tap",
+      "action": "mouse.right_click"
+    },
+    {
+      "id": "move_left",
+      "name": "Di trai",
+      "gesture_event": "swipe_left",
+      "action": "keyboard.hotkey",
+      "keys": ["a"]
+    },
+    {
+      "id": "move_right",
+      "name": "Di phai",
+      "gesture_event": "swipe_right",
+      "action": "keyboard.hotkey",
+      "keys": ["d"]
+    },
+    {
+      "id": "jump",
+      "name": "Nhay",
+      "gesture_event": "swipe_up",
+      "action": "keyboard.hotkey",
+      "keys": ["space"]
+    }
+  ]
+}

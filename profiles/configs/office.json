@@ -1,0 +1,82 @@
+{
+  "id": "office",
+  "name": "Văn phòng",
+  "description": "Dùng cho tài liệu, duyệt file, chuyển tab và kéo thả.",
+  "mouse": {
+    "speed": 2.2,
+    "sensitivity": 2.0,
+    "smoothing": 0.55,
+    "dead_zone": 0.004,
+    "max_step": 90
+  },
+  "gesture_filter": {
+    "prediction_buffer": 7,
+    "stable_min_count": 4,
+    "click_cooldown": 0.45,
+    "action_cooldown": 0.8
+  },
+  "functions": [
+    {
+      "id": "move_mouse",
+      "name": "Di chuyển chuột",
+      "gesture_event": "hand_move",
+      "action": "mouse.move"
+    },
+    {
+      "id": "left_click",
+      "name": "Click trái",
+      "gesture_event": "pinch_tap",
+      "action": "mouse.left_click"
+    },
+    {
+      "id": "right_click",
+      "name": "Click phải",
+      "gesture_event": "two_finger_tap",
+      "action": "mouse.right_click"
+    },
+    {
+      "id": "drag_hold",
+      "name": "Giữ kéo",
+      "gesture_event": "pinch_hold",
+      "action": "mouse.down"
+    },
+    {
+      "id": "drag_move",
+      "name": "Di chuyển khi kéo",
+      "gesture_event": "drag_move",
+      "action": "mouse.move"
+    },
+    {
+      "id": "drag_release",
+      "name": "Thả kéo",
+      "gesture_event": "drag_release",
+      "action": "mouse.up"
+    },
+    {
+      "id": "scroll_up",
+      "name": "Cuộn lên",
+      "gesture_event": "three_up",
+      "action": "mouse.scroll_up"
+    },
+    {
+      "id": "scroll_down",
+      "name": "Cuộn xuống",
+      "gesture_event": "three_down",
+      "action": "mouse.scroll_down"
+    },
+    {
+      "id": "next_tab",
+      "name": "Chuyển tab phải",
+      "gesture_event": "swipe_right",
+      "action": "keyboard.hotkey",
+      "keys": ["ctrl", "tab"]
+    },
+    {
+      "id": "previous_tab",
+      "name": "Chuyển tab trái",
+      "gesture_event": "swipe_left",
+      "action": "keyboard.hotkey",
+      "keys": ["ctrl", "shift", "tab"]
+    }
+  ]
+}

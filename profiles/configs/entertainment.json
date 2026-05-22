@@ -1,0 +1,65 @@
+{
+  "id": "entertainment",
+  "name": "Giải trí",
+  "description": "Dùng cho phát media, cuộn nội dung và điều hướng nhanh.",
+  "mouse": {
+    "speed": 2.0,
+    "sensitivity": 1.8,
+    "smoothing": 0.62,
+    "dead_zone": 0.005,
+    "max_step": 84
+  },
+  "gesture_filter": {
+    "prediction_buffer": 7,
+    "stable_min_count": 4,
+    "click_cooldown": 0.5,
+    "action_cooldown": 0.9
+  },
+  "functions": [
+    {
+      "id": "move_pointer",
+      "name": "Di chuyen con tro",
+      "gesture_event": "hand_move",
+      "action": "mouse.move"
+    },
+    {
+      "id": "select",
+      "name": "Chon noi dung",
+      "gesture_event": "pinch_tap",
+      "action": "mouse.left_click"
+    },
+    {
+      "id": "play_pause",
+      "name": "Phat tam dung",
+      "gesture_event": "palm_stop",
+      "action": "keyboard.hotkey",
+      "keys": ["space"]
+    },
+    {
+      "id": "scroll_up",
+      "name": "Cuon len",
+      "gesture_event": "three_up",
+      "action": "mouse.scroll_up"
+    },
+    {
+      "id": "scroll_down",
+      "name": "Cuon xuong",
+      "gesture_event": "three_down",
+      "action": "mouse.scroll_down"
+    },
+    {
+      "id": "next_media",
+      "name": "Noi dung tiep",
+      "gesture_event": "swipe_right",
+      "action": "keyboard.hotkey",
+      "keys": ["right"]
+    },
+    {
+      "id": "previous_media",
+      "name": "Noi dung truoc",
+      "gesture_event": "swipe_left",
+      "action": "keyboard.hotkey",
+      "keys": ["left"]
+    }
+  ]
+}

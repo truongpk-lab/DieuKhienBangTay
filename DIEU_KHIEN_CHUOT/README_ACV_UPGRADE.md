@@ -964,15 +964,15 @@ Hãy đọc project ACV hiện tại. Refactor phần camera, MediaPipe hand tra
 ### Chat 2 — Thêm profile system
 
 ```text
-[ ] Tạo profiles/configs/office.json
-[ ] Tạo profiles/configs/entertainment.json
-[ ] Tạo profiles/configs/game_2d.json
-[ ] Tạo profile_schema.py
-[ ] Tạo profile_manager.py
-[ ] Tạo action_mapper.py
-[ ] Load profile theo id
-[ ] Validate profile
-[ ] Mapping gesture_event sang action
+[x] Tạo profiles/configs/office.json
+[x] Tạo profiles/configs/entertainment.json
+[x] Tạo profiles/configs/game_2d.json
+[x] Tạo profile_schema.py
+[x] Tạo profile_manager.py
+[x] Tạo action_mapper.py
+[x] Load profile theo id
+[x] Validate profile
+[x] Mapping gesture_event sang action
 [ ] Commit: add profile mapping system
 ```
 
