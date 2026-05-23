@@ -15,12 +15,16 @@ export type GestureLog = {
 
 export type RuntimeStatus = {
   currentProfile: string
+  currentProfileId?: string
   currentGesture: string
   currentAction: string
   fps: number
   accuracy: number
   trackingStatus: string
   latency: number
+  cameraStatus?: string
+  handStatus?: string
+  active?: boolean
 }
 
 export type Profile = {

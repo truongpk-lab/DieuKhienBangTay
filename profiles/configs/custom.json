@@ -1,0 +1,66 @@
+{
+  "id": "custom",
+  "name": "Tùy chỉnh",
+  "description": "Bộ cấu hình cá nhân do người dùng tinh chỉnh.",
+  "mouse": {
+    "speed": 1.5,
+    "sensitivity": 75,
+    "smoothing": 3
+  },
+  "gesture_filter": {
+    "hand": "auto",
+    "min_confidence": 0.7,
+    "debounce_ms": 90
+  },
+  "functions": [
+    {
+      "id": "move",
+      "label": "Di chuyển chuột",
+      "gesture_event": "open_palm_move",
+      "gesture": "Open Palm Move",
+      "action": "mouse.move",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "left_click",
+      "label": "Click trái",
+      "gesture_event": "pinch_index",
+      "gesture": "Pinch Index",
+      "action": "mouse.left_click",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "drag_drop",
+      "label": "Kéo thả file/thư mục",
+      "gesture_event": "closed_fist_hold",
+      "gesture": "Closed Fist Hold",
+      "action": "mouse.drag",
+      "enabled": true,
+      "payload": {
+        "state_machine": ["pinch_start", "pinch_hold", "drag_move", "drag_release"]
+      }
+    },
+    {
+      "id": "play_pause",
+      "label": "Play/Pause",
+      "gesture_event": "open_close_palm",
+      "gesture": "Open Close Palm",
+      "action": "media.play_pause",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "game_attack",
+      "label": "Tấn công trong game",
+      "gesture_event": "rapid_punch",
+      "gesture": "Rapid Punch",
+      "action": "game.attack",
+      "enabled": true,
+      "payload": {
+        "key": "j"
+      }
+    }
+  ]
+}

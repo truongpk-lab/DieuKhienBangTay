@@ -1,35 +1,36 @@
 import { Power, Radio, Target } from 'lucide-react'
 import { motion } from 'motion/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { startRuntime, stopRuntime } from '../api/backend'
 import HandCameraHUD from '../components/HandCameraHUD'
 import TerminalLog from '../components/TerminalLog'
-import type { GestureLog, Profile, RuntimeStatus } from '../types'
+import type { GestureLog, RuntimeStatus } from '../types'
 
-const mockProfiles: Profile[] = [
-  { id: 'office', name: 'Văn phòng', description: 'Điều hướng desktop và kéo thả' },
-  { id: 'entertainment', name: 'Giải trí', description: 'Media control' },
-  { id: 'game_2d', name: 'Game 2D', description: 'Action mapping' },
-  { id: 'custom', name: 'Tùy chỉnh', description: 'User-defined profile' },
-]
-
-const runtime: RuntimeStatus = {
-  currentProfile: mockProfiles[0].name,
-  currentGesture: 'Pinch',
-  currentAction: 'Kéo thả',
-  fps: 60,
-  accuracy: 98.5,
-  trackingStatus: 'Active Tracking',
-  latency: 12,
+type DashboardViewProps = {
+  runtime: RuntimeStatus
+  logs: GestureLog[]
+  onRuntimeChange: (runtime: RuntimeStatus) => void
 }
 
-const logs: GestureLog[] = [
-  { time: '10:42:01', type: 'system', message: 'Camera initialized' },
-  { time: '10:42:03', type: 'detection', message: 'Hand detected: Right' },
-  { time: '10:42:05', type: 'gesture', message: 'Pinch detected -> drag_start' },
-]
-
-export default function DashboardView() {
+export default function DashboardView({ runtime, logs, onRuntimeChange }: DashboardViewProps) {
   const [visibleLogs, setVisibleLogs] = useState(logs)
+
+  useEffect(() => {
+    setVisibleLogs(logs)
+  }, [logs])
+
+  async function toggleRuntime() {
+    try {
+      const nextRuntime = runtime.active ? await stopRuntime() : await startRuntime()
+      onRuntimeChange(nextRuntime)
+    } catch {
+      onRuntimeChange({
+        ...runtime,
+        active: !runtime.active,
+        trackingStatus: runtime.active ? 'Paused' : 'Active Tracking',
+      })
+    }
+  }
 
   return (
     <div className="grid gap-5 py-5 xl:grid-cols-[minmax(0,2fr)_420px]">
@@ -55,10 +56,17 @@ export default function DashboardView() {
           <Info label="Hồ sơ" value={runtime.currentProfile} />
           <Info label="Cử chỉ" value={runtime.currentGesture} />
           <Info label="Hành động" value={runtime.currentAction} />
+          <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-semibold">
+            <span className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-2 py-2 text-cyan-100">Hand detected</span>
+            <span className="rounded-xl border border-blue-300/20 bg-blue-300/10 px-2 py-2 text-blue-100">Pinch</span>
+            <span className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-2 py-2 text-emerald-100">Dragging</span>
+          </div>
           <motion.button
+            type="button"
+            onClick={toggleRuntime}
             animate={{ boxShadow: ['0 0 0 0 rgba(239,68,68,0.25)', '0 0 0 22px rgba(239,68,68,0)'] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="mx-auto mt-6 grid h-28 w-28 place-items-center rounded-full bg-red-500/15 text-red-100 ring-8 ring-red-500/5"
+            className={`mx-auto mt-6 grid h-28 w-28 place-items-center rounded-full ring-8 ${runtime.active ? 'bg-red-500/15 text-red-100 ring-red-500/5' : 'bg-cyan-300/15 text-cyan-100 ring-cyan-300/5'}`}
           >
             <Power className="h-10 w-10" />
           </motion.button>

@@ -1,5 +1,6 @@
 import { Edit3, Mouse, MousePointerClick, Plus, Save, ScrollText, Swords, Tv } from 'lucide-react'
-import type { FunctionMapping } from '../types'
+import { useState } from 'react'
+import type { FunctionMapping, Profile } from '../types'
 
 const mappings: FunctionMapping[] = [
   { id: 'move', label: 'Di chuyển chuột', gesture: 'Open Palm Move' },
@@ -14,15 +15,18 @@ const mappings: FunctionMapping[] = [
 
 const icons = [Mouse, MousePointerClick, MousePointerClick, Mouse, ScrollText, Tv, Tv, Swords]
 
-export default function ConfigView() {
+export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) {
+  const profileOptions = profiles.length ? profiles : [{ id: 'desktop', name: 'Desktop Navigation', description: '' }]
+  const [saved, setSaved] = useState(false)
+
   return (
     <div className="space-y-5 py-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="max-w-2xl text-slate-400">Gán chức năng máy tính với gesture/action theo từng mục đích sử dụng.</p>
         <select className="rounded-xl border border-white/10 bg-[#1c1b1d] px-4 py-3 text-white">
-          <option>Desktop Navigation</option>
-          <option>Game 2D (Platformer)</option>
-          <option>Presentation Mode</option>
+          {profileOptions.map((profile) => (
+            <option key={profile.id}>{profile.name}</option>
+          ))}
         </select>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -51,8 +55,11 @@ export default function ConfigView() {
         </button>
       </div>
       <div className="sticky bottom-4 flex justify-end gap-3 rounded-2xl border border-white/10 bg-black/55 p-4 backdrop-blur">
+        <span className={`mr-auto self-center text-sm ${saved ? 'text-emerald-200' : 'text-amber-200'}`}>
+          {saved ? 'Saved' : 'Unsaved'}
+        </span>
         <button className="rounded-xl border border-white/10 px-5 py-3 text-slate-300">Hủy</button>
-        <button className="inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-5 py-3 font-semibold text-black">
+        <button onClick={() => setSaved(true)} className="inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-5 py-3 font-semibold text-black">
           <Save className="h-4 w-4" />
           LƯU CẤU HÌNH
         </button>

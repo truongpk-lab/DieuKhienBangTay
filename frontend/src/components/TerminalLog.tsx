@@ -25,12 +25,12 @@ export default function TerminalLog({ logs, onClear }: TerminalLogProps) {
         {logs.map((log) => (
           <div
             key={`${log.time}-${log.message}`}
-            className={`grid grid-cols-[90px_1fr] gap-4 rounded-lg px-2 py-1 ${
+            className={`grid grid-cols-[78px_1fr] gap-3 rounded-lg px-2 py-1 sm:grid-cols-[90px_1fr] sm:gap-4 ${
               log.type === 'gesture' ? 'border-l-2 border-cyan-300 bg-cyan-300/5 text-cyan-100' : 'text-slate-300'
             }`}
           >
             <span className="text-slate-500">{log.time}</span>
-            <span>{log.message}</span>
+            <span className="break-words">{log.message}</span>
           </div>
         ))}
         <div ref={endRef} />

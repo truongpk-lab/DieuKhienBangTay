@@ -1,0 +1,107 @@
+{
+  "id": "entertainment",
+  "name": "Giải trí",
+  "description": "Điều khiển phát media, chuyển video và âm lượng.",
+  "mouse": {
+    "speed": 1.2,
+    "sensitivity": 70,
+    "smoothing": 3
+  },
+  "gesture_filter": {
+    "hand": "auto",
+    "min_confidence": 0.72,
+    "debounce_ms": 100
+  },
+  "functions": [
+    {
+      "id": "play_pause",
+      "label": "Play/Pause",
+      "gesture_event": "open_close_palm",
+      "gesture": "Open Close Palm",
+      "action": "media.play_pause",
+      "enabled": true,
+      "payload": {
+        "shortcut": "space"
+      }
+    },
+    {
+      "id": "next_video",
+      "label": "Next video",
+      "gesture_event": "swipe_right",
+      "gesture": "Swipe Right",
+      "action": "media.next",
+      "enabled": true,
+      "payload": {
+        "shortcut": "media_next"
+      }
+    },
+    {
+      "id": "previous_video",
+      "label": "Previous video",
+      "gesture_event": "swipe_left",
+      "gesture": "Swipe Left",
+      "action": "media.previous",
+      "enabled": true,
+      "payload": {
+        "shortcut": "media_previous"
+      }
+    },
+    {
+      "id": "seek_forward",
+      "label": "Tua tới",
+      "gesture_event": "two_finger_swipe_right",
+      "gesture": "Two Finger Swipe Right",
+      "action": "media.seek_forward",
+      "enabled": true,
+      "payload": {
+        "shortcut": "right",
+        "seconds": 10
+      }
+    },
+    {
+      "id": "seek_backward",
+      "label": "Tua lùi",
+      "gesture_event": "two_finger_swipe_left",
+      "gesture": "Two Finger Swipe Left",
+      "action": "media.seek_backward",
+      "enabled": true,
+      "payload": {
+        "shortcut": "left",
+        "seconds": 10
+      }
+    },
+    {
+      "id": "volume_up",
+      "label": "Tăng âm lượng",
+      "gesture_event": "swipe_up",
+      "gesture": "Swipe Up",
+      "action": "media.volume_up",
+      "enabled": true,
+      "payload": {
+        "shortcut": "volume_up"
+      }
+    },
+    {
+      "id": "volume_down",
+      "label": "Giảm âm lượng",
+      "gesture_event": "swipe_down",
+      "gesture": "Swipe Down",
+      "action": "media.volume_down",
+      "enabled": true,
+      "payload": {
+        "shortcut": "volume_down"
+      }
+    },
+    {
+      "id": "fullscreen",
+      "label": "Fullscreen",
+      "gesture_event": "open_palm_hold",
+      "gesture": "Open Palm Hold",
+      "action": "media.fullscreen",
+      "enabled": true,
+      "payload": {
+        "shortcut": "f"
+      }
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "id": "office",
+  "name": "Văn phòng",
+  "description": "Điều hướng desktop, tài liệu và kéo thả hằng ngày.",
+  "mouse": {
+    "speed": 1.5,
+    "sensitivity": 75,
+    "smoothing": 3
+  },
+  "gesture_filter": {
+    "hand": "auto",
+    "min_confidence": 0.75,
+    "debounce_ms": 80
+  },
+  "functions": [
+    {
+      "id": "move",
+      "label": "Di chuyển chuột",
+      "gesture_event": "open_palm_move",
+      "gesture": "Open Palm Move",
+      "action": "mouse.move",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "left_click",
+      "label": "Click trái",
+      "gesture_event": "pinch_index",
+      "gesture": "Pinch Index",
+      "action": "mouse.left_click",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "right_click",
+      "label": "Click phải",
+      "gesture_event": "pinch_middle",
+      "gesture": "Pinch Middle",
+      "action": "mouse.right_click",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "drag_drop",
+      "label": "Kéo thả file/thư mục",
+      "gesture_event": "closed_fist_hold",
+      "gesture": "Closed Fist Hold",
+      "action": "mouse.drag",
+      "enabled": true,
+      "payload": {
+        "state_machine": ["pinch_start", "pinch_hold", "drag_move", "drag_release"]
+      }
+    },
+    {
+      "id": "scroll",
+      "label": "Cuộn trang",
+      "gesture_event": "two_finger_swipe",
+      "gesture": "Two Finger Swipe",
+      "action": "mouse.scroll",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "phase12_pinch_tap",
+      "label": "Click trái",
+      "gesture_event": "pinch_tap",
+      "gesture": "Pinch Tap",
+      "action": "mouse.left_click",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "phase12_two_finger_tap",
+      "label": "Click phải",
+      "gesture_event": "two_finger_tap",
+      "gesture": "Two Finger Tap",
+      "action": "mouse.right_click",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "phase12_three_up",
+      "label": "Cuộn lên",
+      "gesture_event": "three_up",
+      "gesture": "Three Fingers Up",
+      "action": "mouse.scroll",
+      "enabled": true,
+      "payload": {
+        "amount": 5
+      }
+    },
+    {
+      "id": "phase12_three_down",
+      "label": "Cuộn xuống",
+      "gesture_event": "three_down",
+      "gesture": "Three Fingers Down",
+      "action": "mouse.scroll",
+      "enabled": true,
+      "payload": {
+        "amount": -5
+      }
+    },
+    {
+      "id": "phase12_pinch_hold",
+      "label": "Giữ chuột",
+      "gesture_event": "pinch_hold",
+      "gesture": "Pinch Hold",
+      "action": "mouse.down",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "phase12_drag_move",
+      "label": "Di chuyển khi kéo",
+      "gesture_event": "drag_move",
+      "gesture": "Drag Move",
+      "action": "mouse.move",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "phase12_drag_release",
+      "label": "Thả chuột",
+      "gesture_event": "drag_release",
+      "gesture": "Drag Release",
+      "action": "mouse.up",
+      "enabled": true,
+      "payload": {}
+    },
+    {
+      "id": "switch_tab",
+      "label": "Chuyển tab",
+      "gesture_event": "three_finger_left_right",
+      "gesture": "Three Finger Left/Right",
+      "action": "keyboard.switch_tab",
+      "enabled": true,
+      "payload": {
+        "shortcut": "ctrl+tab"
+      }
+    },
+    {
+      "id": "copy",
+      "label": "Copy",
+      "gesture_event": "pinch_hold_left",
+      "gesture": "Pinch Hold Left",
+      "action": "keyboard.copy",
+      "enabled": true,
+      "payload": {
+        "shortcut": "ctrl+c"
+      }
+    },
+    {
+      "id": "paste",
+      "label": "Paste",
+      "gesture_event": "pinch_hold_right",
+      "gesture": "Pinch Hold Right",
+      "action": "keyboard.paste",
+      "enabled": true,
+      "payload": {
+        "shortcut": "ctrl+v"
+      }
+    }
+  ]
+}

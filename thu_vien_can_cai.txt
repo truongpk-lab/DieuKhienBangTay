@@ -1,0 +1,48 @@
+ACV Gesture Control - thu vien va runtime can cai
+
+Runtime Windows:
+- Node.js 22.x hoac moi hon
+- npm 10.x hoac moi hon
+- Python 3.12.x qua Python Launcher `py -3`
+
+Python packages:
+- opencv-python
+- mediapipe
+- numpy
+- scikit-learn
+- joblib
+- pyautogui
+- pywebview
+
+Cai Python packages:
+cd D:\github\link\DieuKhienBangTay
+py -3 -m pip install -r DIEU_KHIEN_CHUOT\requirements.txt
+
+Frontend npm dependencies:
+- @tailwindcss/vite
+- lucide-react
+- motion
+- react
+- react-dom
+- tailwindcss
+
+Frontend npm devDependencies:
+- @eslint/js
+- @types/node
+- @types/react
+- @types/react-dom
+- @vitejs/plugin-react
+- concurrently
+- electron
+- eslint
+- eslint-plugin-react-hooks
+- eslint-plugin-react-refresh
+- globals
+- typescript
+- typescript-eslint
+- vite
+- wait-on
+
+Cai frontend dependencies:
+cd D:\github\link\DieuKhienBangTay\frontend
+npm install
