@@ -1,42 +1,30 @@
 import json
+import sys
 import time
-import ctypes
-import ctypes.wintypes
-from collections import Counter, deque
-from types import SimpleNamespace
 from pathlib import Path
 
 import cv2
-import joblib
 import numpy as np
 
-from hand_feature_utils import extract_landmark_features, landmarks_to_array
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
-try:
-    import mediapipe as mp
-    MEDIAPIPE_AVAILABLE = True
-except ModuleNotFoundError:
-    mp = None
-    MEDIAPIPE_AVAILABLE = False
-
-try:
-    import pyautogui
-    PYAUTOGUI_AVAILABLE = True
-except ModuleNotFoundError:
-    pyautogui = None
-    PYAUTOGUI_AVAILABLE = False
+from actions.mouse_controller import MouseController, PYAUTOGUI_AVAILABLE
+from core.camera_service import CameraService
+from core.feature_extractor import FeatureExtractor
+from core.gesture_classifier import GestureClassifier
+from core.hand_tracker import HandTracker, MEDIAPIPE_AVAILABLE
+from core.temporal_filter import TemporalFilter
+from hand_feature_utils import landmarks_to_array
 
 
-PROCESS_SIZE = 224
-MODEL_IMAGE_SIZE = 64
-BOUNDING_BOX_MARGIN = 30
 PREDICTION_BUFFER_SIZE = 7
 STABLE_MIN_COUNT = 4
 CLICK_COOLDOWN = 0.5
 CLICK_FREEZE_DURATION = 0.35
 FAST_CLICK_CONFIRM_FRAMES = 3
 GESTURE_SWITCH_FREEZE_DURATION = 0.30
-MULTI_CLICK_INTERVAL = 0.08
 DRAG_PREP_FREEZE_DURATION = 0.25
 DRAG_RELEASE_FREEZE_DURATION = 1.0
 ACTION_COOLDOWN = 1.0
@@ -83,158 +71,6 @@ FINGER_MCP_IDS = {
     "ring": 13,
     "pinky": 17,
 }
-MOUSEEVENTF_LEFTDOWN = 0x0002
-MOUSEEVENTF_LEFTUP = 0x0004
-MOUSEEVENTF_RIGHTDOWN = 0x0008
-MOUSEEVENTF_RIGHTUP = 0x0010
-MOUSEEVENTF_WHEEL = 0x0800
-KEYEVENTF_KEYUP = 0x0002
-VK_MENU = 0x12
-VK_CONTROL = 0x11
-VK_SHIFT = 0x10
-VK_TAB = 0x09
-VK_LEFT = 0x25
-VK_RIGHT = 0x27
-
-
-if PYAUTOGUI_AVAILABLE:
-    pyautogui.FAILSAFE = False
-    pyautogui.PAUSE = 0.0
-
-
-class MouseController:
-    def __init__(self):
-        self.backend = "none"
-        self.user32 = None
-
-        if PYAUTOGUI_AVAILABLE:
-            self.backend = "pyautogui"
-            self.screen_w, self.screen_h = pyautogui.size()
-            return
-
-        try:
-            self.user32 = ctypes.windll.user32
-            self.user32.SetProcessDPIAware()
-            self.screen_w = int(self.user32.GetSystemMetrics(0))
-            self.screen_h = int(self.user32.GetSystemMetrics(1))
-            self.backend = "winapi"
-        except (AttributeError, OSError):
-            self.screen_w, self.screen_h = 1920, 1080
-
-    @property
-    def enabled(self):
-        return self.backend != "none"
-
-    def move_to(self, x, y):
-        if self.backend == "pyautogui":
-            pyautogui.moveTo(x, y)
-        elif self.backend == "winapi":
-            self.user32.SetCursorPos(int(x), int(y))
-
-    def position(self):
-        if self.backend == "pyautogui":
-            x, y = pyautogui.position()
-            return int(x), int(y)
-
-        if self.backend == "winapi":
-            point = ctypes.wintypes.POINT()
-            self.user32.GetCursorPos(ctypes.byref(point))
-            return int(point.x), int(point.y)
-
-        return self.screen_w // 2, self.screen_h // 2
-
-    def click(self, button="left", clicks=1):
-        if self.backend == "pyautogui":
-            pyautogui.click(button=button, clicks=clicks, interval=MULTI_CLICK_INTERVAL)
-            return
-
-        if self.backend != "winapi":
-            return
-
-        down_flag, up_flag = (
-            (MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP)
-            if button == "right"
-            else (MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP)
-        )
-        for _ in range(clicks):
-            self.user32.mouse_event(down_flag, 0, 0, 0, 0)
-            self.user32.mouse_event(up_flag, 0, 0, 0, 0)
-            if clicks > 1:
-                time.sleep(MULTI_CLICK_INTERVAL)
-
-    def mouse_down(self):
-        if self.backend == "pyautogui":
-            pyautogui.mouseDown()
-        elif self.backend == "winapi":
-            self.user32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
-
-    def mouse_up(self):
-        if self.backend == "pyautogui":
-            pyautogui.mouseUp()
-        elif self.backend == "winapi":
-            self.user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-
-    def scroll(self, amount):
-        if self.backend == "pyautogui":
-            pyautogui.scroll(amount)
-        elif self.backend == "winapi":
-            self.user32.mouse_event(MOUSEEVENTF_WHEEL, 0, 0, int(amount), 0)
-
-    def hotkey_alt_arrow(self, direction):
-        if self.backend == "pyautogui":
-            pyautogui.hotkey("alt", direction)
-            return
-
-        if self.backend != "winapi":
-            return
-
-        arrow_key = VK_LEFT if direction == "left" else VK_RIGHT
-        self.user32.keybd_event(VK_MENU, 0, 0, 0)
-        self.user32.keybd_event(arrow_key, 0, 0, 0)
-        self.user32.keybd_event(arrow_key, 0, KEYEVENTF_KEYUP, 0)
-        self.user32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
-
-    def switch_task(self, direction):
-        if self.backend == "pyautogui":
-            if direction == "previous":
-                pyautogui.hotkey("alt", "shift", "tab")
-            else:
-                pyautogui.hotkey("alt", "tab")
-            return
-
-        if self.backend != "winapi":
-            return
-
-        use_shift = direction == "previous"
-        self.user32.keybd_event(VK_MENU, 0, 0, 0)
-        if use_shift:
-            self.user32.keybd_event(VK_SHIFT, 0, 0, 0)
-        self.user32.keybd_event(VK_TAB, 0, 0, 0)
-        self.user32.keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0)
-        if use_shift:
-            self.user32.keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0)
-        self.user32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
-
-    def switch_tab(self, direction):
-        if self.backend == "pyautogui":
-            if direction == "left":
-                pyautogui.hotkey("ctrl", "shift", "tab")
-            else:
-                pyautogui.hotkey("ctrl", "tab")
-            return
-
-        if self.backend != "winapi":
-            return
-
-        use_shift = direction == "left"
-        self.user32.keybd_event(VK_CONTROL, 0, 0, 0)
-        if use_shift:
-            self.user32.keybd_event(VK_SHIFT, 0, 0, 0)
-        self.user32.keybd_event(VK_TAB, 0, 0, 0)
-        self.user32.keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0)
-        if use_shift:
-            self.user32.keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0)
-        self.user32.keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0)
 
 
 class HandGestureDemo:
@@ -248,39 +84,17 @@ class HandGestureDemo:
         self.model_dir = self.base_dir / "trained_model"
         self.model_path = self.model_dir / "best_hand_gesture_model.joblib"
         self.label_map_path = self.model_dir / "label_mapping.json"
-
-        if not self.model_path.exists():
-            raise FileNotFoundError(
-                f"Chua tim thay model: {self.model_path}. Hay chay train_model.py truoc."
-            )
-        if not self.label_map_path.exists():
-            raise FileNotFoundError(
-                f"Chua tim thay label map: {self.label_map_path}. Hay chay train_model.py truoc."
-            )
-
-        self.model = joblib.load(self.model_path)
-        self.id_to_label = self.load_id_to_label()
-        self.expected_feature_count = self.get_expected_feature_count()
-        self.hog = cv2.HOGDescriptor(
-            (MODEL_IMAGE_SIZE, MODEL_IMAGE_SIZE),
-            (16, 16),
-            (8, 8),
-            (8, 8),
-            9,
+        self.classifier = GestureClassifier(self.model_path, self.label_map_path)
+        self.feature_extractor = FeatureExtractor(
+            expected_feature_count=self.classifier.expected_feature_count
         )
-
-        self.mp_hands = mp.solutions.hands
-        self.mp_draw = mp.solutions.drawing_utils
-        self.hands = self.mp_hands.Hands(
-            static_image_mode=False,
-            max_num_hands=1,
-            model_complexity=1,
-            min_detection_confidence=0.6,
-            min_tracking_confidence=0.6,
+        self.hand_tracker = HandTracker()
+        self.camera = CameraService(camera_index=0)
+        self.temporal_filter = TemporalFilter(
+            buffer_size=PREDICTION_BUFFER_SIZE,
+            stable_min_count=STABLE_MIN_COUNT,
+            empty_label="none",
         )
-        self.cap = cv2.VideoCapture(0)
-
-        self.prediction_buffer = deque(maxlen=PREDICTION_BUFFER_SIZE)
         self.mouse = MouseController()
         self.mouse_enabled = self.mouse.enabled
         self.screen_w, self.screen_h = self.mouse.screen_w, self.mouse.screen_h
@@ -311,76 +125,6 @@ class HandGestureDemo:
         self.last_stable_label = "none"
         self.last_raw_label = "none"
         self.hand_was_lost = True
-
-    def load_id_to_label(self):
-        with self.label_map_path.open("r", encoding="utf-8") as file:
-            label_to_id = json.load(file)
-        return {int(idx): label for label, idx in label_to_id.items()}
-
-    def get_expected_feature_count(self):
-        if hasattr(self.model, "n_features_in_"):
-            return int(self.model.n_features_in_)
-
-        classifier = getattr(self.model, "named_steps", {}).get("classifier")
-        if classifier is not None and hasattr(classifier, "n_features_in_"):
-            return int(classifier.n_features_in_)
-
-        return None
-
-    def extract_features(self, image):
-        resized = cv2.resize(image, (MODEL_IMAGE_SIZE, MODEL_IMAGE_SIZE), interpolation=cv2.INTER_AREA)
-        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-        equalized = cv2.equalizeHist(gray)
-        edges = cv2.Canny(equalized, 60, 140)
-        hog_features = self.hog.compute(equalized).flatten()
-        gray_features = equalized.astype(np.float32).flatten() / 255.0
-        edge_features = edges.astype(np.float32).flatten() / 255.0
-        return np.concatenate([gray_features, edge_features, hog_features]).astype(np.float32)
-
-    def extract_prediction_features(self, hand_landmarks, processed_preview):
-        landmark_features = extract_landmark_features(hand_landmarks.landmark)
-        if self.expected_feature_count in (None, landmark_features.shape[0]):
-            return landmark_features.reshape(1, -1)
-
-        image_features = self.extract_features(processed_preview)
-        if image_features.shape[0] == self.expected_feature_count:
-            return image_features.reshape(1, -1)
-
-        raise ValueError(
-            "So chieu feature cua model khong khop voi landmark hoac anh. "
-            "Hay chay lai process_hand_gesture_dataset.py va train_model.py."
-        )
-
-    def get_bounding_box(self, landmarks, image_width, image_height):
-        xs = [int(point.x * image_width) for point in landmarks]
-        ys = [int(point.y * image_height) for point in landmarks]
-
-        x_min = max(0, min(xs) - BOUNDING_BOX_MARGIN)
-        y_min = max(0, min(ys) - BOUNDING_BOX_MARGIN)
-        x_max = min(image_width, max(xs) + BOUNDING_BOX_MARGIN)
-        y_max = min(image_height, max(ys) + BOUNDING_BOX_MARGIN)
-
-        if x_max <= x_min or y_max <= y_min:
-            return None
-        return x_min, y_min, x_max, y_max
-
-    def preprocess_crop(self, crop):
-        processed = cv2.resize(crop, (PROCESS_SIZE, PROCESS_SIZE), interpolation=cv2.INTER_AREA)
-        processed = cv2.GaussianBlur(processed, (3, 3), 0)
-        processed = cv2.convertScaleAbs(processed, alpha=1.1, beta=8)
-        return processed
-
-    def get_stable_label(self):
-        if not self.prediction_buffer:
-            self.current_stable_label = "none"
-            return self.current_stable_label
-
-        top_label, top_count = Counter(self.prediction_buffer).most_common(1)[0]
-        if top_count >= STABLE_MIN_COUNT:
-            self.current_stable_label = top_label
-        else:
-            self.current_stable_label = "none"
-        return self.current_stable_label
 
     def finger_states(self, landmarks):
         points = landmarks_to_array(landmarks)
@@ -535,22 +279,9 @@ class HandGestureDemo:
         self.sent_mouse_x = int(current_x)
         self.sent_mouse_y = int(current_y)
 
-    def palm_control_point(self, landmarks):
-        ids = [
-            self.mp_hands.HandLandmark.WRIST,
-            self.mp_hands.HandLandmark.INDEX_FINGER_MCP,
-            self.mp_hands.HandLandmark.MIDDLE_FINGER_MCP,
-            self.mp_hands.HandLandmark.RING_FINGER_MCP,
-            self.mp_hands.HandLandmark.PINKY_MCP,
-        ]
-        return SimpleNamespace(
-            x=float(np.mean([landmarks[idx].x for idx in ids])),
-            y=float(np.mean([landmarks[idx].y for idx in ids])),
-        )
-
     def handle_hand_lost(self):
-        self.prediction_buffer.clear()
-        self.current_stable_label = "none"
+        self.temporal_filter.clear()
+        self.current_stable_label = self.temporal_filter.current_stable_label
         self.raw_click_candidate = None
         self.raw_click_count = 0
         self.reset_mouse_anchor()
@@ -564,8 +295,8 @@ class HandGestureDemo:
 
     def prepare_hand_reacquire(self):
         self.reset_mouse_anchor()
-        self.prediction_buffer.clear()
-        self.current_stable_label = "none"
+        self.temporal_filter.clear()
+        self.current_stable_label = self.temporal_filter.current_stable_label
         self.last_stable_label = "none"
         self.last_raw_label = "none"
         self.raw_click_candidate = None
@@ -609,8 +340,8 @@ class HandGestureDemo:
         self.mouse.click(button=button, clicks=1)
         self.last_click_time = now
         self.move_freeze_until = max(self.move_freeze_until, now + CLICK_FREEZE_DURATION)
-        self.prediction_buffer.clear()
-        self.current_stable_label = "none"
+        self.temporal_filter.clear()
+        self.current_stable_label = self.temporal_filter.current_stable_label
         self.raw_click_candidate = None
         self.raw_click_count = 0
 
@@ -620,8 +351,8 @@ class HandGestureDemo:
         self.drag_release_until = now + DRAG_RELEASE_FREEZE_DURATION
         self.reset_mouse_anchor()
         self.update_move_gesture_gate(None)
-        self.prediction_buffer.clear()
-        self.current_stable_label = "none"
+        self.temporal_filter.clear()
+        self.current_stable_label = self.temporal_filter.current_stable_label
         self.move_freeze_until = max(self.move_freeze_until, now + DRAG_RELEASE_FREEZE_DURATION)
 
     def move_mouse(self, point, now=None):
@@ -856,7 +587,7 @@ class HandGestureDemo:
         can_move_pointer = self.update_move_gesture_gate(desired_move_label)
 
         if can_move_pointer:
-            control_point = self.palm_control_point(landmarks)
+            control_point = self.hand_tracker.palm_control_point(landmarks)
             self.move_mouse(control_point, now=now)
 
         if (
@@ -891,14 +622,16 @@ class HandGestureDemo:
 
     def predict_frame(self, frame):
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = self.hands.process(rgb)
+        results = self.hand_tracker.process(rgb)
         if not results.multi_hand_landmarks:
             self.handle_hand_lost()
             return None, None
 
         hand_landmarks = results.multi_hand_landmarks[0]
         height, width = frame.shape[:2]
-        box = self.get_bounding_box(hand_landmarks.landmark, width, height)
+        box = self.feature_extractor.get_bounding_box(
+            hand_landmarks.landmark, width, height
+        )
         if box is None:
             self.handle_hand_lost()
             return None, hand_landmarks
@@ -912,13 +645,14 @@ class HandGestureDemo:
         if self.hand_was_lost:
             self.prepare_hand_reacquire()
 
-        processed_preview = self.preprocess_crop(crop)
-        features = self.extract_prediction_features(hand_landmarks, processed_preview)
-        pred_id = int(self.model.predict(features)[0])
-        model_label = self.id_to_label.get(pred_id, f"class_{pred_id}")
+        processed_preview = self.feature_extractor.preprocess_crop(crop)
+        features = self.feature_extractor.extract_prediction_features(
+            hand_landmarks, processed_preview
+        )
+        _, model_label = self.classifier.predict_label(features)
         pred_label, label_source = self.corrected_label(model_label, hand_landmarks)
-        self.prediction_buffer.append(pred_label)
-        stable_label = self.get_stable_label()
+        stable_label = self.temporal_filter.append(pred_label)
+        self.current_stable_label = stable_label
 
         self.apply_mouse_actions(stable_label, pred_label, hand_landmarks)
 
@@ -933,7 +667,7 @@ class HandGestureDemo:
 
     def draw_ui(self, frame, prediction, hand_landmarks):
         if hand_landmarks is not None:
-            self.mp_draw.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
+            self.hand_tracker.draw_landmarks(frame, hand_landmarks)
 
         if prediction is None:
             cv2.putText(frame, "Gesture: khong nhan duoc", (10, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
@@ -965,11 +699,11 @@ class HandGestureDemo:
         cv2.putText(frame, "Nhan Q hoac ESC de thoat", (10, 244), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
     def run(self):
-        if not self.cap.isOpened():
+        if not self.camera.is_opened():
             raise RuntimeError("Khong mo duoc webcam.")
 
         while True:
-            success, frame = self.cap.read()
+            success, frame = self.camera.read()
             if not success:
                 break
 
@@ -985,7 +719,8 @@ class HandGestureDemo:
         if self.dragging and self.mouse_enabled:
             self.mouse.mouse_up()
 
-        self.cap.release()
+        self.camera.release()
+        self.hand_tracker.close()
         cv2.destroyAllWindows()
 
 

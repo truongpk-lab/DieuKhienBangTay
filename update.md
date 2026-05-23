@@ -1,0 +1,737 @@
+# update.md — ACV Gesture Control UI-First Pipeline
+
+> Pipeline cho Codex xây dựng app **ACV Gesture Control**.
+>
+> Chiến lược:
+>
+> ```text
+> UI-FIRST
+> + giữ nguyên hàm điều khiển chuột hiện tại
+> + được phép chia nhỏ/đổi tên/tổ chức lại để tạo app hoàn chỉnh
+> + không sửa logic điều khiển chuột làm ảnh hưởng hiệu suất
+> + sau UI mới bọc MouseController hiện tại bằng adapter
+> ```
+>
+> Lưu ý: Không hiểu câu "không sửa" là cấm tổ chức lại app. Codex **được phép tạo cấu trúc mới**, nhưng phải bảo toàn behavior chuột cũ.
+
+---
+
+## 0. Quy tắc bắt buộc
+
+Trước khi sửa code, Codex phải:
+
+```text
+[ ] Đọc AGENTS.md
+[ ] Đọc update.md
+[ ] Đọc ripgrep.md
+[ ] Đọc ACV_GESTURE_SPEC.md
+[ ] Dùng rg để tìm file liên quan
+[ ] Không đọc toàn bộ repo nếu chưa cần
+[ ] Chỉ thực hiện đúng phase được yêu cầu
+[ ] Không tự ý làm nhiều phase cùng lúc
+```
+
+Trong các phase UI:
+
+```text
+[ ] Không sửa logic điều khiển chuột hiện tại
+[ ] Không sửa thuật toán MouseController hiện tại
+[ ] Không làm giảm hiệu suất điều khiển chuột
+[ ] Không xóa demo_run.py
+[ ] Không xóa class MouseController cũ
+[ ] Không sửa trained_model hiện tại
+```
+
+Được phép:
+
+```text
+[x] Tạo frontend/
+[x] Tạo UI hoàn chỉnh
+[x] Tạo cấu trúc module mới
+[x] Tạo adapter sau này để gọi MouseController cũ
+[x] Tạo profile/action/training module mới
+[x] Đổi tên module mới do Codex tạo
+[x] Tách app thành frontend/backend/core rõ ràng
+```
+
+Sau mỗi phase:
+
+```text
+[x] Chạy test/build phù hợp
+[x] Cập nhật checklist trong update.md
+[x] Báo file đã sửa
+[x] Báo lệnh test đã chạy
+[x] Báo rủi ro còn lại
+```
+
+---
+
+## 1. Mục tiêu sản phẩm
+
+```text
+[x] Giao diện hiện đại Cyber-Clean / futuristic
+[x] Onboarding chọn camera, tay, tốc độ chuột, độ nhạy, smoothing
+[x] Dashboard realtime mock có camera HUD, hand skeleton, gesture log
+[x] Configuration Page để gán chức năng với gesture/action
+[x] Gesture Training Page để thu mẫu ảnh/video và train cử chỉ
+[x] Detailed Workflow Page cho Pinch Drag Drop
+[x] Giữ lại hành vi điều khiển chuột hiện tại
+[ ] Thêm adapter để dùng lại MouseController hiện tại
+[x] Thêm profile: Văn phòng, Giải trí, Game 2D, Tùy chỉnh
+[x] Thêm thao tác mới: kéo-thả, scroll, chuyển tab, play/pause, game action
+[ ] Dataset collector
+[ ] Training pipeline
+[ ] Model registry
+[ ] Backend/frontend integration
+```
+
+---
+
+## 2. File giao diện bắt buộc: ACV_GESTURE_SPEC.md
+
+`ACV_GESTURE_SPEC.md` là file chuẩn UI.
+
+Codex phải đọc file này trước khi làm:
+
+```text
+Phase 1 — Frontend scaffold
+Phase 2 — Design system Cyber-Clean
+Phase 3 — App shell navigation
+Phase 4 — Dashboard UI
+Phase 5 — Onboarding UI
+Phase 6 — Configuration UI
+Phase 7 — Training UI
+Phase 8 — Workflow UI
+Phase 9 — UI polish/build
+```
+
+File này quyết định:
+
+```text
+[x] Cyber-Clean
+[x] Breathable Void
+[x] Kinetic Glass
+[x] Deep Obsidian background
+[x] Neon Cyan + Electric Blue
+[x] Glassmorphism
+[x] Tailwind CSS v4
+[x] Framer Motion
+[x] Lucide React
+[x] HandSkeleton SVG
+[x] TerminalLog
+[x] Layout 5 trang
+```
+
+---
+
+## 3. Tài liệu/công nghệ tham khảo
+
+### Hand tracking sau này
+
+```text
+Google AI Edge Hand Landmarker:
+https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker
+
+MediaPipe Hands paper:
+https://arxiv.org/abs/2006.10214
+
+MediaPipe Hands docs:
+https://mediapipe.readthedocs.io/en/latest/solutions/hands.html
+```
+
+### Dynamic gesture sau này
+
+```text
+Next-Gen Dynamic Hand Gesture Recognition, Electronics 2024:
+https://www.mdpi.com/2079-9292/13/16/3233
+
+Dynamic Gesture Recognition using Transformer and Mediapipe, 2024:
+https://thesai.org/Downloads/Volume15No6/Paper_143-Dynamic_Gesture_Recognition_using_a_Transformer_and_Mediapipe.pdf
+```
+
+### Virtual mouse
+
+```text
+Hand Gesture Controlled Virtual Mouse using OpenCV, MediaPipe in Python:
+https://www.irjweb.com/user_upload/HAND%20GESTURE%20CONTROLLED%20VIRTUAL%20MOUSE%20USING%20OPENCV%2CMEDIAPIPE%20IN%20PYTHON.pdf
+```
+
+---
+
+# UI-FIRST PHASES
+
+---
+
+## Phase 1 — Frontend scaffold
+
+### Checklist
+
+```text
+[x] Dùng rg kiểm tra repo đã có frontend/package.json chưa
+[x] Nếu chưa có, tạo thư mục frontend/
+[x] Tạo Vite React TypeScript app
+[x] Cài Tailwind CSS v4
+[x] Cài Framer Motion
+[x] Cài Lucide React
+[x] Tạo frontend/src/main.tsx
+[x] Tạo frontend/src/App.tsx
+[x] Tạo frontend/src/index.css
+[x] Tạo frontend/src/types.ts
+[x] Không sửa logic điều khiển chuột hiện tại
+[x] Không sửa MouseController hiện tại
+[x] npm run build thành công
+```
+
+### Prompt cho Codex
+
+```text
+Đọc AGENTS.md, update.md, ripgrep.md và ACV_GESTURE_SPEC.md.
+Chỉ thực hiện Phase 1 — Frontend scaffold.
+Tạo frontend React TypeScript bằng Vite nếu chưa có. Cài Tailwind CSS v4, Framer Motion, Lucide React.
+Không sửa logic điều khiển chuột hiện tại, không sửa MouseController hiện tại.
+Được phép tạo cấu trúc frontend mới để xây app hoàn chỉnh.
+Sau khi xong chạy npm run build và cập nhật checklist Phase 1.
+```
+
+---
+
+## Phase 2 — Design system Cyber-Clean
+
+### Checklist
+
+```text
+[x] Đọc phần màu sắc trong ACV_GESTURE_SPEC.md
+[x] Cập nhật frontend/src/index.css
+[x] Thêm @import "tailwindcss"
+[x] Thêm brand-cyan #00f2ff
+[x] Thêm brand-blue #4b8eff
+[x] Thêm brand-obsidian #0A0A0C
+[x] Thêm font display Be Vietnam Pro hoặc fallback sans
+[x] Thêm font mono JetBrains Mono hoặc monospace
+[x] Tạo utility .glass-panel
+[x] Tạo utility .glass-inner
+[x] Tạo utility .glow-text
+[x] Tạo utility .glow-btn-active
+[x] Tạo background grid obsidian
+[x] npm run build thành công
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 2 — Design system Cyber-Clean.
+Dựa trên ACV_GESTURE_SPEC.md để cập nhật index.css, theme màu, glass-panel, glow effects và background grid.
+Không sửa logic điều khiển chuột. Build kiểm tra.
+```
+
+---
+
+## Phase 3 — App shell, navigation và mock data
+
+### Checklist
+
+```text
+[x] Tạo frontend/src/types.ts
+[x] Khai báo AppView type
+[x] Khai báo Profile type
+[x] Khai báo GestureLog type
+[x] Khai báo FunctionMapping type
+[x] Tạo mock profiles
+[x] Tạo mock runtime
+[x] Tạo mock logs
+[x] Tạo components/SideNavBar.tsx
+[x] Tạo components/TopAppBar.tsx
+[x] Cập nhật App.tsx navigation state
+[x] Có route/state cho 5 view: onboarding, dashboard, config, training, workflow
+[x] npm run build thành công
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 3 — App shell, navigation và mock data.
+Tạo SideNavBar, TopAppBar, types.ts, mock profiles/runtime/logs.
+App.tsx điều phối 5 view bằng state. Chưa cần React Router.
+Không sửa logic điều khiển chuột. Build kiểm tra.
+```
+
+---
+
+## Phase 4 — Dashboard UI
+
+### Checklist
+
+```text
+[x] Tạo components/HandSkeleton.tsx
+[x] Tạo components/HandCameraHUD.tsx
+[x] Tạo components/TerminalLog.tsx
+[x] Tạo views/DashboardView.tsx
+[x] Camera live viewer mock
+[x] LIVE badge đỏ
+[x] SVG hand skeleton màu neon cyan
+[x] HUD Model: ACV-Hand-v2.1
+[x] HUD Res: 1920x1080
+[x] FPS card
+[x] Accuracy card
+[x] Current profile card
+[x] Current gesture card
+[x] Current action card
+[x] STOP button pulse
+[x] Terminal log auto-scroll
+[x] Clear log button
+[x] npm run build thành công
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 4 — Dashboard UI.
+Bắt buộc đọc phần Dashboard trong ACV_GESTURE_SPEC.md.
+Tạo HandSkeleton, HandCameraHUD, TerminalLog và DashboardView theo style Cyber-Clean.
+Dùng mock data. Không kết nối camera thật. Không sửa logic chuột. Build kiểm tra.
+```
+
+---
+
+## Phase 5 — Onboarding UI
+
+### Checklist
+
+```text
+[x] Tạo views/OnboardingView.tsx
+[x] Glass panel max-w-4xl
+[x] 2 cột: info trái, settings phải
+[x] Logo ACV Gesture Control
+[x] Tiêu đề Thiết lập ban đầu
+[x] Sensor status ping cyan
+[x] Dropdown chọn webcam
+[x] Segmented control tay trái/tay phải/tự động
+[x] Slider tốc độ chuột 0.1x → 3.0x
+[x] Slider sensitivity 0 → 100%
+[x] Slider smoothing mức 1 → 5
+[x] Profile cards: Văn phòng, Giải trí, Game 2D, Tùy chỉnh
+[x] Nút Bắt đầu hiệu chỉnh
+[x] Nút Bỏ qua
+[x] npm run build thành công
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 5 — Onboarding UI.
+Dựa trên ACV_GESTURE_SPEC.md, tạo OnboardingView với glass panel 2 cột, slider realtime, profile cards và nút hành động.
+Dùng local state. Không sửa logic chuột. Build kiểm tra.
+```
+
+---
+
+## Phase 6 — Configuration / Setup Profile UI
+
+### Checklist
+
+```text
+[x] Tạo views/ConfigView.tsx
+[x] Tiêu đề Thiết lập cấu hình
+[x] Dropdown mục đích sử dụng
+[x] Bento grid function cards
+[x] Card Di chuyển chuột
+[x] Card Click trái
+[x] Card Click phải
+[x] Card Kéo thả file/thư mục
+[x] Card Cuộn trang
+[x] Card Chuyển tab
+[x] Card Play/Pause
+[x] Card Tấn công trong game
+[x] Card thêm mới
+[x] Mỗi card có icon/illustration
+[x] Mỗi card có gesture hiện tại
+[x] Mỗi card có nút Chỉnh sửa
+[x] Bottom action bar
+[x] Nút Hủy
+[x] Nút LƯU CẤU HÌNH
+[x] npm run build thành công
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 6 — Configuration / Setup Profile UI.
+Tạo ConfigView theo ACV_GESTURE_SPEC.md: dropdown profile, bento grid cards, card thêm mới, bottom action bar Save/Cancel.
+Dùng mock mappings. Không sửa logic chuột. Build kiểm tra.
+```
+
+---
+
+## Phase 7 — Gesture Training UI
+
+### Checklist
+
+```text
+[x] Tạo views/TrainingView.tsx
+[x] Layout 2 cột: config trái, camera phải
+[x] Dropdown chọn profile
+[x] Dropdown chọn nhãn/chức năng
+[x] Toggle Chụp ảnh / Quay video
+[x] Input sample count
+[x] Progress 24/30 mẫu
+[x] Progress bar gradient cyan
+[x] Instruction banner
+[x] Camera HUD
+[x] Hand skeleton overlay
+[x] Nút Ghi hình
+[x] Nút Dừng
+[x] Nút Xem trước mẫu
+[x] Nút Hủy
+[x] Nút Huấn luyện
+[x] Nút Lưu
+[x] npm run build thành công
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 7 — Gesture Training UI.
+Tạo TrainingView theo ACV_GESTURE_SPEC.md.
+Có profile selector, function selector, image/video mode, sample count, progress, instruction banner, camera HUD, Record/Stop/Preview/Train/Save/Cancel.
+Với kéo-thả hiển thị hướng dẫn: Kẹp ngón tay để giữ, di chuyển tay, sau đó thả ngón để bỏ.
+Không sửa logic chuột. Build kiểm tra.
+```
+
+---
+
+## Phase 8 — Detailed Workflow UI
+
+### Checklist
+
+```text
+[x] Tạo views/WorkflowView.tsx
+[x] Tiêu đề QUY TRÌNH KÉO THẢ (PINCH DRAG DROP)
+[x] Stepper ngang 5 bước
+[x] Bước 1 Kẹp ngón
+[x] Bước 2 Giữ
+[x] Bước 3 Di chuyển tay active
+[x] Bước 4 Thả ngón
+[x] Bước 5 Hoàn thành
+[x] Đường nối bước 1 → 3 sáng cyan
+[x] Bước active có radar pulse
+[x] Card trạng thái hiện tại
+[x] Badge Sensor: Active
+[x] Badge Latency: 12ms
+[x] npm run build thành công
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 8 — Detailed Workflow UI.
+Tạo WorkflowView theo ACV_GESTURE_SPEC.md. Stepper 5 bước kéo-thả, bước 3 active có pulse/radar bằng Framer Motion.
+Không sửa logic chuột. Build kiểm tra.
+```
+
+---
+
+## Phase 9 — UI polish và build final
+
+### Checklist
+
+```text
+[x] Kiểm tra tất cả view dùng chung theme
+[x] Kiểm tra responsive cơ bản
+[x] Kiểm tra navigation hoạt động
+[x] Kiểm tra không lỗi TypeScript
+[x] Kiểm tra npm run build
+[ ] Không còn import thừa nghiêm trọng
+[ ] Không còn TODO UI quan trọng
+[ ] Cập nhật README hoặc ghi chú cách chạy frontend
+[x] Xác nhận không sửa MouseController hiện tại
+[x] Xác nhận không sửa logic chuột hiện tại
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 9 — UI polish và build final.
+Kiểm tra toàn bộ UI, responsive, navigation, TypeScript build.
+Không sửa logic chuột hiện tại. Cập nhật checklist và hướng dẫn chạy frontend.
+```
+
+---
+
+# PHASE SAU UI: THÊM CHỨC NĂNG NHƯNG GIỮ LOGIC CHUỘT HIỆN TẠI
+
+---
+
+## Phase 10 — Profile JSON/schema tương thích UI
+
+### Checklist
+
+```text
+[ ] Tạo profiles/__init__.py
+[ ] Tạo profiles/profile_schema.py
+[ ] Tạo profiles/profile_manager.py
+[ ] Tạo profiles/action_mapper.py
+[ ] Tạo profiles/configs/office.json
+[ ] Tạo profiles/configs/entertainment.json
+[ ] Tạo profiles/configs/game_2d.json
+[ ] Tạo profiles/configs/custom.json
+[ ] Profile JSON tương thích function cards trong UI
+[ ] Load profile theo id
+[ ] Validate profile JSON
+[ ] Mapping gesture_event sang action
+[ ] Test load từng profile
+```
+
+---
+
+## Phase 11 — Bọc MouseController hiện tại bằng adapter
+
+### Mục tiêu
+
+Dùng lại hàm điều khiển chuột hiện tại, không viết lại từ đầu.
+
+### Checklist
+
+```text
+[ ] Dùng rg tìm class MouseController hiện tại
+[ ] Dùng rg tìm các hàm move/click/scroll/mouse_down/mouse_up
+[ ] Tạo actions/__init__.py nếu chưa có
+[ ] Tạo actions/mouse_control_adapter.py
+[ ] Adapter import hoặc bọc MouseController hiện tại
+[ ] Adapter cung cấp API chuẩn: move, click, right_click, scroll, mouse_down, mouse_up
+[ ] Không đổi hành vi MouseController cũ
+[ ] Không đổi thuật toán/logic ảnh hưởng hiệu suất
+[ ] demo_run.py cũ vẫn chạy được
+[ ] Test import adapter
+```
+
+### Prompt
+
+```text
+Chỉ thực hiện Phase 11 — Bọc MouseController hiện tại bằng adapter.
+Dùng rg tìm class MouseController và các hàm điều khiển chuột hiện có.
+Không viết lại MouseController từ đầu. Không đổi logic ảnh hưởng hiệu suất.
+Tạo adapter để các phase sau gọi lại logic cũ.
+```
+
+---
+
+## Phase 12 — ActionMapper nối profile với adapter
+
+### Checklist
+
+```text
+[ ] Tạo action executor nếu cần
+[ ] ActionMapper đọc gesture_event từ profile JSON
+[ ] ActionMapper gọi MouseControlAdapter
+[ ] Hỗ trợ action mouse.move
+[ ] Hỗ trợ action mouse.left_click
+[ ] Hỗ trợ action mouse.right_click
+[ ] Hỗ trợ action mouse.scroll
+[ ] Hỗ trợ action mouse.down
+[ ] Hỗ trợ action mouse.up
+[ ] Hỗ trợ keyboard hotkey nếu đã có controller
+[ ] Test bằng event giả
+```
+
+---
+
+## Phase 13 — Pinch Drag Drop State Machine
+
+### Checklist
+
+```text
+[ ] Tính pinch_distance = distance(thumb_tip, index_tip) / palm_size
+[ ] Tính hand_position từ wrist/palm center
+[ ] Tạo core/gesture_state_machine.py
+[ ] Tạo PinchDragDropStateMachine
+[ ] Thêm state idle
+[ ] Thêm state pinch_candidate
+[ ] Thêm state holding
+[ ] Thêm state dragging
+[ ] Thêm event pinch_start
+[ ] Thêm event pinch_hold
+[ ] Thêm event drag_start
+[ ] Thêm event drag_move
+[ ] Thêm event drag_release
+[ ] Thêm event pinch_cancel
+[ ] drag_start gọi mouse.down qua adapter/action mapper
+[ ] drag_move gọi mouse.move qua adapter/action mapper
+[ ] drag_release gọi mouse.up qua adapter/action mapper
+[ ] Test state machine bằng dữ liệu giả
+```
+
+---
+
+## Phase 14 — Thêm thao tác theo profile
+
+### Checklist
+
+```text
+[ ] Office: scroll tài liệu
+[ ] Office: chuyển tab
+[ ] Office: kéo-thả file/thư mục
+[ ] Entertainment: play/pause
+[ ] Entertainment: next/previous
+[ ] Entertainment: volume up/down
+[ ] Game 2D: move left/right
+[ ] Game 2D: jump
+[ ] Game 2D: attack
+[ ] Game 2D: dash
+[ ] Các thao tác mới đi qua profile/action mapper
+[ ] Không hard-code trong demo_run.py
+[ ] Không đổi MouseController hiện tại
+```
+
+---
+
+## Phase 15 — Dataset collector cho Training UI
+
+### Checklist
+
+```text
+[ ] Tạo training/dataset_collector.py
+[ ] Tạo training/image_sample_collector.py
+[ ] Tạo training/video_sample_collector.py
+[ ] Tạo training/dataset_validator.py
+[ ] Lưu static sample JSON
+[ ] Lưu dynamic sample JSON
+[ ] Lưu profile
+[ ] Lưu function_id
+[ ] Lưu gesture_label
+[ ] Lưu timestamp
+[ ] Lưu landmarks
+[ ] Lưu features
+[ ] Validate sample thiếu bàn tay
+```
+
+---
+
+## Phase 16 — Training pipeline
+
+### Checklist
+
+```text
+[ ] Tạo training/train_static_gesture.py
+[ ] Tạo training/train_dynamic_gesture.py
+[ ] Tạo training/evaluate_model.py
+[ ] Train static classifier bằng landmark features
+[ ] Dynamic gesture dùng state machine hoặc sequence skeleton
+[ ] Tính accuracy
+[ ] Tính precision/recall/f1
+[ ] In confusion matrix
+[ ] Lưu model joblib/onnx
+[ ] Lưu label_mapping.json
+```
+
+---
+
+## Phase 17 — Model registry
+
+### Checklist
+
+```text
+[ ] Tạo models/model_registry.json nếu chưa có
+[ ] Tạo training/model_registry.py
+[ ] Ghi model_id
+[ ] Ghi type static/dynamic
+[ ] Ghi path
+[ ] Ghi created_at
+[ ] Ghi labels
+[ ] Ghi metrics
+[ ] Ghi dataset sample_count
+[ ] Set active model
+[ ] Rollback model
+```
+
+---
+
+## Phase 18 — Backend/frontend integration
+
+### Checklist
+
+```text
+[ ] Chọn FastAPI/WebSocket hoặc integration phù hợp
+[ ] Tạo API trạng thái camera
+[ ] Tạo API profile list
+[ ] Tạo API current gesture/action
+[ ] Tạo API start/stop tracking
+[ ] Tạo API training sample progress
+[ ] Frontend consume API
+[ ] UI fallback mock nếu backend offline
+[ ] Mouse actions vẫn gọi MouseControlAdapter
+[ ] MouseControlAdapter vẫn dùng logic chuột cũ
+```
+
+---
+
+## Phase 19 — Final polish/test
+
+### Checklist
+
+```text
+[ ] Visual feedback khi hand detected
+[ ] Visual feedback khi pinch
+[ ] Visual feedback khi dragging
+[ ] Cảnh báo camera không tìm thấy
+[ ] Cảnh báo ánh sáng yếu
+[ ] Cảnh báo sample lỗi
+[ ] Trạng thái Saved/Unsaved
+[ ] Confirm khi ghi đè model
+[ ] Confirm khi hủy training session
+[ ] Test frontend build
+[ ] Test demo Python cũ
+[ ] Test adapter import
+[ ] Test profile Văn phòng
+[ ] Test profile Giải trí
+[ ] Test profile Game 2D
+[ ] Test scroll
+[ ] Test click
+[ ] Test kéo-thả
+[ ] Xác nhận MouseController cũ không bị đổi hành vi
+```
+
+---
+
+## Definition of Done
+
+```text
+[x] Frontend build thành công
+[x] Có UI 5 trang theo ACV_GESTURE_SPEC.md
+[x] Có mock data và navigation
+[ ] demo_run.py cũ không bị phá
+[ ] MouseController hiện tại được giữ behavior
+[ ] Có MouseControlAdapter bọc logic chuột cũ
+[ ] Có profile JSON/schema
+[ ] Có action mapper
+[ ] Có pinch drag-drop state machine
+[ ] Có dataset collector
+[ ] Có training pipeline
+[ ] Có model registry
+[ ] Có backend/frontend integration hoặc fallback mock
+[x] Có hướng dẫn chạy app
+```
+
+---
+
+## Prompt tổng mở Codex
+
+```text
+Bạn là coding agent cho project ACV Gesture Control.
+
+Chiến lược hiện tại: UI-FIRST và bảo toàn MouseController/hàm điều khiển chuột hiện tại.
+
+Hãy đọc:
+1. AGENTS.md
+2. update.md
+3. ripgrep.md
+4. ACV_GESTURE_SPEC.md
+
+Sau đó chỉ thực hiện phase tôi yêu cầu.
+Được phép chia nhỏ, đổi tên module mới, tạo cấu trúc app hoàn chỉnh.
+Không được thay đổi thuật toán/hành vi điều khiển chuột hiện tại làm ảnh hưởng hiệu suất.
+Nếu cần dùng chuột sau này, hãy bọc MouseController hiện tại bằng adapter, không viết lại từ đầu.
+Trước khi sửa code, dùng rg theo ripgrep.md.
+Sau khi sửa, cập nhật checklist trong update.md, chạy test phù hợp, báo file đã sửa và lệnh test.
+
+Phase hiện tại: <điền phase>.
+```

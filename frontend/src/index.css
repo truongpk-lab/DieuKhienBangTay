@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-cyan: #00f2ff;
+  --color-brand-blue: #4b8eff;
+  --color-brand-obsidian: #0A0A0C;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Be Vietnam Pro", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(19, 19, 21, 0.64);
+    border: 1px solid rgba(0, 242, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 24px 90px rgba(0, 0, 0, 0.32);
+  }
+
+  .glass-panel:hover {
+    background: rgba(19, 19, 21, 0.72);
+    border-color: rgba(0, 242, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.1), 0 24px 90px rgba(0, 0, 0, 0.32);
+  }
+
+  .glass-inner {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .glow-text {
+    text-shadow: 0 0 18px rgba(0, 242, 255, 0.42);
+  }
+
+  .glow-btn-active {
+    box-shadow: 0 0 22px rgba(0, 242, 255, 0.42), inset 0 0 10px rgba(0, 242, 255, 0.18);
+  }
+
+  .obsidian-grid {
+    background:
+      linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+      radial-gradient(circle at 22% 12%, rgba(0, 242, 255, 0.12), transparent 30%),
+      var(--color-brand-obsidian);
+    background-size: 40px 40px, 40px 40px, auto, auto;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 22% 12%, rgba(0, 242, 255, 0.12), transparent 30%),
+    var(--color-brand-obsidian);
+  background-size: 40px 40px, 40px 40px, auto, auto;
+  color: #f8fafc;
+  font-family: var(--font-sans);
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
