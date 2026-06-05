@@ -441,6 +441,18 @@ Không sửa logic chuột. Build kiểm tra.
 [x] Đồng bộ ACV_GESTURE_SPEC.md, ripgrep.md và docs/button_inventory.md theo Hướng Dẫn Thao Tác
 ```
 
+### Cập nhật phiên 2026-06-05 — Đồng bộ Hướng Dẫn với Cấu Hình
+
+```text
+[x] WorkflowView không còn hard-code thư viện chức năng riêng
+[x] WorkflowView đọc profile đã lưu qua getProfile và fallback catalog local khi backend offline
+[x] Card hướng dẫn tự sinh từ FunctionMapping đang enabled
+[x] Action mới xuất hiện trong Hướng dẫn thao tác sau khi LƯU CẤU HÌNH
+[x] actionCatalog hỗ trợ đủ 4 profile: Văn phòng, Giải trí, Game 2D, Tùy chỉnh
+[x] Không sửa logic MouseController/demo/backend runtime
+[x] npm run build thành công bằng Windows runtime
+```
+
 ---
 
 ## Phase 9 — UI polish và build final
@@ -773,6 +785,25 @@ Tạo adapter để các phase sau gọi lại logic cũ.
 [x] npm run build thành công bằng Windows cmd.exe
 [x] py -3 -m compileall profiles backend thành công bằng Windows cmd.exe
 [x] ProfileManager load office/entertainment/game_2d thành công với 16/15/16 action
+```
+
+---
+
+## Bugfix — Startup backend/WebSocket stability
+
+### Checklist
+
+```text
+[x] Sửa run_desktop.py không start trùng Uvicorn khi port 8000 đã có ACV backend healthy
+[x] Thêm stop_backend join thread để launcher tắt server sạch hơn
+[x] Giảm log startup desktop bằng TF_CPP_MIN_LOG_LEVEL và Uvicorn warning/no access log
+[x] Lọc traceback WinError 10054/10053/995 do browser/WebSocket đóng kết nối trên Windows
+[x] WebSocket runtime tự kết thúc êm khi client disconnect và không gửi lặp gesture/voice event cũ
+[x] Không sửa MouseController/demo_run.py hoặc thuật toán điều khiển chuột
+[x] python -m compileall run_desktop.py backend thành công
+[x] npm --prefix frontend run build thành công bằng Windows cmd.exe
+[x] py -3 run_desktop.py --self-test thành công bằng Windows cmd.exe
+[x] Kiểm thử precheck backend đang chiếm port 8000 thành công
 ```
 
 ---

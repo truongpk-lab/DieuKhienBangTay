@@ -131,7 +131,7 @@ function App() {
             )}
             {activeView === 'config' && <ConfigView profiles={profiles} />}
             {activeView === 'training' && <TrainingView profiles={profiles} />}
-            {activeView === 'workflow' && <WorkflowView runtime={runtime} logs={logs} />}
+            {activeView === 'workflow' && <WorkflowView runtime={runtime} logs={logs} profiles={profiles} />}
           </section>
         </div>
       </div>

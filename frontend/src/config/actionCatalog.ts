@@ -1,7 +1,7 @@
 import type { ProfileDetail } from '../api/profileApi'
 import type { FunctionMapping, GestureSuggestion, Profile } from '../types'
 
-export type ConfigProfileId = 'office' | 'entertainment' | 'game_2d'
+export type ConfigProfileId = 'office' | 'entertainment' | 'game_2d' | 'custom'
 
 type MappingSeed = Omit<FunctionMapping, 'enabled' | 'gesture_options'> & {
   options: GestureSuggestion[]
@@ -22,6 +22,11 @@ export const configProfiles: Profile[] = [
     id: 'game_2d',
     name: 'Game 2D',
     description: 'Ánh xạ hành động nhanh cho game platformer bằng phím quen thuộc.',
+  },
+  {
+    id: 'custom',
+    name: 'Tùy chỉnh',
+    description: 'Bộ thao tác cá nhân cho workflow riêng, macro và phím tắt đặc biệt.',
   },
 ]
 
@@ -849,6 +854,69 @@ export const localProfileDetails: Record<ConfigProfileId, ProfileDetail> = {
     gesture_filter: { hand: 'right', min_confidence: 0.78, debounce_ms: 60 },
     functions: game2dFunctions,
   },
+  custom: {
+    ...configProfiles[3],
+    mouse: { speed: 1.5, sensitivity: 75, smoothing: 3 },
+    gesture_filter: { hand: 'auto', min_confidence: 0.7, debounce_ms: 90 },
+    functions: [
+      mapping({
+        id: 'move',
+        label: 'Di chuyển chuột',
+        description: 'Điều hướng con trỏ trên desktop.',
+        category: 'Pointer',
+        gesture_event: 'open_palm_move',
+        gesture: 'Open Palm Move',
+        action: 'mouse.move',
+        payload: {},
+        options: pointerGestures,
+      }),
+      mapping({
+        id: 'left_click',
+        label: 'Click trái',
+        description: 'Chọn file, nút hoặc ô nhập liệu.',
+        category: 'Pointer',
+        gesture_event: 'pinch_index',
+        gesture: 'Pinch Index',
+        action: 'mouse.left_click',
+        payload: {},
+        options: clickGestures,
+      }),
+      mapping({
+        id: 'drag_drop',
+        label: 'Kéo thả file/thư mục',
+        description: 'Giữ, di chuyển và thả đối tượng.',
+        category: 'Pointer',
+        gesture_event: 'closed_fist_hold',
+        gesture: 'Closed Fist Hold',
+        action: 'mouse.drag',
+        payload: { state_machine: ['pinch_start', 'pinch_hold', 'drag_move', 'drag_release'] },
+        options: dragGestures,
+      }),
+      mapping({
+        id: 'play_pause',
+        label: 'Play/Pause',
+        description: 'Bật hoặc tạm dừng nội dung đang phát.',
+        category: 'Playback',
+        gesture_event: 'open_close_palm',
+        gesture: 'Open Close Palm',
+        action: 'media.play_pause',
+        payload: {},
+        options: confirmGestures,
+      }),
+      mapping({
+        id: 'game_attack',
+        label: 'Tấn công trong game',
+        description: 'Đòn đánh thường cho profile tùy chỉnh.',
+        category: 'Combat',
+        gesture_event: 'rapid_punch',
+        gesture: 'Rapid Punch',
+        action: 'game.attack',
+        payload: { key: 'j' },
+        tone: 'red',
+        options: gameGestures,
+      }),
+    ],
+  },
 }
 
 export const allGestureEvents = Array.from(
@@ -863,7 +931,7 @@ export const allGestureEvents = Array.from(
 ).filter(Boolean)
 
 export function isConfigProfileId(profileId: string): profileId is ConfigProfileId {
-  return profileId === 'office' || profileId === 'entertainment' || profileId === 'game_2d'
+  return profileId === 'office' || profileId === 'entertainment' || profileId === 'game_2d' || profileId === 'custom'
 }
 
 export function getLocalProfileDetail(profileId: string): ProfileDetail {

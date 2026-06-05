@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
   AlertTriangle,
@@ -8,12 +8,16 @@ import {
   Camera,
   CheckCircle2,
   CircleDot,
+  Copy,
   Gamepad2,
   Gauge,
   Hand,
   Keyboard,
+  Maximize2,
   Mouse,
   MousePointer2,
+  Music2,
+  PanelTop,
   Play,
   ScrollText,
   ShieldCheck,
@@ -22,20 +26,21 @@ import {
   Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { getProfile, type ProfileDetail } from '../api/profileApi'
 import HandSkeleton from '../components/HandSkeleton'
-import type { GestureLog, RuntimeStatus } from '../types'
+import {
+  configProfiles,
+  getLocalProfileDetail,
+  mergeCatalogFunctions,
+  type ConfigProfileId,
+} from '../config/actionCatalog'
+import type { FunctionMapping, GestureLog, Profile, RuntimeStatus } from '../types'
 
-type GuideMode = {
-  id: string
-  label: string
-  subtitle: string
+type GuideModeMeta = {
   icon: LucideIcon
   highlight: string
   difficulty: string
   latency: string
-  activeGesture: string
-  actionPreview: string
-  functions: GuideFunction[]
   practice: string[]
 }
 
@@ -45,82 +50,54 @@ type GuideFunction = {
   description: string
   icon: LucideIcon
   tone?: 'cyan' | 'blue' | 'amber' | 'red'
+  action: string
+  gestureEvent?: string
 }
 
-const guideModes: GuideMode[] = [
-  {
-    id: 'office',
-    label: 'Văn phòng',
-    subtitle: 'Điều hướng tài liệu, cửa sổ và kéo thả file hằng ngày.',
+const guideModeMeta: Record<ConfigProfileId, GuideModeMeta> = {
+  office: {
     icon: Briefcase,
     highlight: 'Tối ưu cho thao tác chính xác',
     difficulty: 'Dễ',
     latency: '12ms',
-    activeGesture: 'Pinch Index',
-    actionPreview: 'Kéo thả file/thư mục',
-    functions: [
-      { title: 'Di chuyển chuột', gesture: 'Xòe bàn tay', description: 'Giữ lòng bàn tay hướng camera và di chuyển nhẹ để điều khiển con trỏ.', icon: MousePointer2 },
-      { title: 'Click trái', gesture: 'Kẹp ngón trỏ', description: 'Chạm ngón cái với ngón trỏ trong một nhịp ngắn để chọn mục.', icon: Mouse },
-      { title: 'Kéo thả file', gesture: 'Kẹp giữ rồi thả', description: 'Kẹp để giữ, di chuyển tay tới vị trí đích, sau đó mở ngón để thả.', icon: Hand, tone: 'blue' },
-      { title: 'Cuộn trang', gesture: 'Vuốt hai ngón', description: 'Đưa hai ngón lên hoặc xuống để cuộn tài liệu, trình duyệt và bảng dữ liệu.', icon: ScrollText },
-    ],
     practice: ['Đặt tay cách camera 40-70cm.', 'Giữ cổ tay ổn định trước khi click.', 'Kẹp và thả dứt khoát khi kéo file.'],
   },
-  {
-    id: 'entertainment',
-    label: 'Giải trí',
-    subtitle: 'Điều khiển video, nhạc, tab phát media và âm lượng.',
+  entertainment: {
     icon: Play,
     highlight: 'Tối ưu cho thao tác nhanh',
     difficulty: 'Dễ',
     latency: '14ms',
-    activeGesture: 'Open Close Palm',
-    actionPreview: 'Play/Pause',
-    functions: [
-      { title: 'Play/Pause', gesture: 'Đóng mở bàn tay', description: 'Mở rồi nắm nhẹ bàn tay để dừng hoặc tiếp tục phát nội dung.', icon: Play },
-      { title: 'Bài tiếp theo', gesture: 'Vuốt phải', description: 'Vuốt tay sang phải để chuyển bài, video hoặc nội dung kế tiếp.', icon: Zap, tone: 'blue' },
-      { title: 'Bài trước đó', gesture: 'Vuốt trái', description: 'Vuốt tay sang trái khi muốn quay lại nội dung trước.', icon: Keyboard },
-      { title: 'Tăng/giảm âm lượng', gesture: 'Vuốt lên/xuống', description: 'Di chuyển hai ngón theo trục dọc để tinh chỉnh âm lượng.', icon: SlidersHorizontal },
-    ],
     practice: ['Dùng cử chỉ lớn hơn khi ngồi xa màn hình.', 'Tránh che khuất đầu ngón tay khi vuốt.', 'Chờ badge phản hồi sáng trước khi lặp thao tác.'],
   },
-  {
-    id: 'game_2d',
-    label: 'Game 2D',
-    subtitle: 'Ánh xạ hành động nhanh cho platformer, arcade và game luyện phản xạ.',
+  game_2d: {
     icon: Gamepad2,
     highlight: 'Tối ưu cho phản hồi nhanh',
     difficulty: 'Trung bình',
     latency: '10ms',
-    activeGesture: 'Rapid Punch',
-    actionPreview: 'Tấn công trong game',
-    functions: [
-      { title: 'Di chuyển trái/phải', gesture: 'Nghiêng tay', description: 'Nghiêng bàn tay theo hướng cần di chuyển để giữ nhịp điều khiển.', icon: Gamepad2, tone: 'blue' },
-      { title: 'Nhảy', gesture: 'Bật ngón trỏ lên', description: 'Nâng ngón trỏ nhanh để kích hoạt hành động nhảy.', icon: Zap },
-      { title: 'Tấn công', gesture: 'Đấm nhanh', description: 'Đưa nắm tay về trước trong vùng nhận diện để gửi lệnh tấn công.', icon: ShieldCheck, tone: 'red' },
-      { title: 'Dash', gesture: 'Vuốt ngang nhanh', description: 'Vuốt cổ tay sang trái hoặc phải để lướt ngắn trong game.', icon: Gauge, tone: 'amber' },
-    ],
     practice: ['Ưu tiên nền sáng đều phía sau tay.', 'Giữ cử chỉ ngắn, rõ và có điểm dừng.', 'Tập riêng từng hành động trước khi chơi thật.'],
   },
-  {
-    id: 'custom',
-    label: 'Tùy chỉnh',
-    subtitle: 'Bộ thao tác cá nhân cho workflow riêng, macro và phím tắt đặc biệt.',
+  custom: {
     icon: SlidersHorizontal,
     highlight: 'Tối ưu cho cá nhân hóa',
     difficulty: 'Nâng cao',
     latency: 'Tùy cấu hình',
-    activeGesture: 'Custom Gesture',
-    actionPreview: 'Tác vụ tự định nghĩa',
-    functions: [
-      { title: 'Macro cá nhân', gesture: 'Gesture tự train', description: 'Gán một cử chỉ đã huấn luyện với chuỗi phím hoặc hành động riêng.', icon: Sparkles },
-      { title: 'Phím tắt ứng dụng', gesture: 'Ba ngón trái/phải', description: 'Kích hoạt hotkey như chuyển workspace, bật công cụ hoặc mở menu.', icon: Keyboard, tone: 'blue' },
-      { title: 'Điều khiển cửa sổ', gesture: 'Kẹp giữ', description: 'Dùng thao tác giữ để kéo cửa sổ hoặc chọn vùng làm việc.', icon: MousePointer2 },
-      { title: 'Quy tắc an toàn', gesture: 'Confidence cao', description: 'Chỉ chạy lệnh khi độ tin cậy vượt ngưỡng để tránh thao tác nhầm.', icon: ShieldCheck, tone: 'amber' },
-    ],
     practice: ['Đặt tên gesture rõ ràng trong cấu hình.', 'Train tối thiểu 30-50 mẫu cho mỗi tác vụ.', 'Kiểm thử bằng ứng dụng ít rủi ro trước.'],
   },
-]
+}
+
+const categoryIcons: Record<string, LucideIcon> = {
+  Pointer: MousePointer2,
+  Navigation: ScrollText,
+  Tabs: PanelTop,
+  Clipboard: Copy,
+  System: Keyboard,
+  Playback: Music2,
+  Timeline: ScrollText,
+  Audio: Music2,
+  View: Maximize2,
+  Movement: Gamepad2,
+  Combat: Zap,
+}
 
 const quickChecklist = [
   'Camera nhìn rõ cổ tay và đầu ngón tay.',
@@ -135,14 +112,66 @@ const commonIssues = [
   { title: 'Mất tracking', detail: 'Đưa tay về giữa khung hình và tránh che các điểm khớp.', icon: Camera },
 ]
 
-export default function WorkflowView({ runtime, logs = [] }: { runtime?: RuntimeStatus; logs?: GestureLog[] }) {
-  const [activeModeId, setActiveModeId] = useState(guideModes[0].id)
-  const activeMode = guideModes.find((mode) => mode.id === activeModeId) ?? guideModes[0]
-  const ActiveIcon = activeMode.icon
+export default function WorkflowView({
+  runtime,
+  logs = [],
+  profiles = [],
+}: {
+  runtime?: RuntimeStatus
+  logs?: GestureLog[]
+  profiles?: Profile[]
+}) {
+  const [activeModeId, setActiveModeId] = useState<ConfigProfileId>('office')
+  const [activeProfile, setActiveProfile] = useState<ProfileDetail>(getLocalProfileDetail('office'))
+  const [profileStatus, setProfileStatus] = useState('Catalog local')
+  const activeModeMeta = guideModeMeta[activeModeId]
+  const ActiveIcon = activeModeMeta.icon
+
+  const guideModes = useMemo(
+    () =>
+      configProfiles.map((item) => ({
+        ...item,
+        description: profiles.find((profile) => profile.id === item.id)?.description ?? item.description,
+      })),
+    [profiles],
+  )
+
+  useEffect(() => {
+    let canceled = false
+    const local = getLocalProfileDetail(activeModeId)
+
+    setActiveProfile(local)
+    setProfileStatus('Đang tải hướng dẫn...')
+
+    getProfile(activeModeId)
+      .then((data) => {
+        if (canceled) return
+        const mergedFunctions = mergeCatalogFunctions(activeModeId, data.functions)
+        setActiveProfile({ ...data, functions: mergedFunctions })
+        setProfileStatus((data.functions?.length ?? 0) < mergedFunctions.length ? 'Saved + catalog bổ sung' : 'Saved')
+      })
+      .catch(() => {
+        if (canceled) return
+        setActiveProfile(local)
+        setProfileStatus('Backend offline; dùng catalog local.')
+      })
+
+    return () => {
+      canceled = true
+    }
+  }, [activeModeId])
+
+  const guideFunctions = useMemo(
+    () => (activeProfile.functions ?? []).filter((mapping) => mapping.enabled !== false).map(mappingToGuideFunction),
+    [activeProfile.functions],
+  )
   const recentGuideLogs = useMemo(
     () => logs.filter((log) => /pinch|drag|gesture|hand|tracking/i.test(log.message)).slice(-3),
     [logs],
   )
+  const primaryFunction = guideFunctions[0]
+  const activeGesture = primaryFunction?.gesture ?? runtime?.currentGesture ?? 'Custom Gesture'
+  const actionPreview = primaryFunction?.title ?? runtime?.currentAction ?? 'Tác vụ đang cấu hình'
 
   return (
     <div className="space-y-5 py-5">
@@ -161,13 +190,13 @@ export default function WorkflowView({ runtime, logs = [] }: { runtime?: Runtime
 
           <div className="grid gap-2 sm:grid-cols-2 xl:min-w-[420px]">
             {guideModes.map((mode) => {
-              const Icon = mode.icon
-              const active = mode.id === activeMode.id
+              const Icon = guideModeMeta[mode.id as ConfigProfileId].icon
+              const active = mode.id === activeModeId
               return (
                 <button
                   key={mode.id}
                   type="button"
-                  onClick={() => setActiveModeId(mode.id)}
+                  onClick={() => setActiveModeId(mode.id as ConfigProfileId)}
                   className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition ${
                     active
                       ? 'border-brand-cyan/40 bg-brand-cyan/15 text-cyan-100 glow-btn-active'
@@ -175,7 +204,7 @@ export default function WorkflowView({ runtime, logs = [] }: { runtime?: Runtime
                   }`}
                 >
                   <Icon className="h-5 w-5 shrink-0" />
-                  <span className="font-medium">{mode.label}</span>
+                  <span className="font-medium">{mode.name}</span>
                 </button>
               )
             })}
@@ -192,24 +221,29 @@ export default function WorkflowView({ runtime, logs = [] }: { runtime?: Runtime
                   <ActiveIcon className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold text-white">{activeMode.label}</h3>
-                  <p className="text-sm text-slate-400">{activeMode.highlight}</p>
+                  <h3 className="text-2xl font-semibold text-white">{activeProfile.name}</h3>
+                  <p className="text-sm text-slate-400">{activeModeMeta.highlight}</p>
                 </div>
               </div>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300">{activeMode.subtitle}</p>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300">{activeProfile.description}</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Badge label={`Độ khó: ${activeMode.difficulty}`} />
-              <Badge label={`Latency: ${runtime?.latency ?? activeMode.latency}${typeof runtime?.latency === 'number' ? 'ms' : ''}`} />
+              <Badge label={`Độ khó: ${activeModeMeta.difficulty}`} />
+              <Badge label={`Latency: ${runtime?.latency ?? activeModeMeta.latency}${typeof runtime?.latency === 'number' ? 'ms' : ''}`} />
               <Badge label={runtime?.trackingStatus ?? 'Sensor: Sẵn sàng'} />
+              <Badge label={profileStatus} />
             </div>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {activeMode.functions.map((item) => (
-              <FunctionCard key={item.title} item={item} />
-            ))}
+            {guideFunctions.length ? (
+              guideFunctions.map((item) => <FunctionCard key={`${item.action}-${item.gestureEvent ?? item.title}`} item={item} />)
+            ) : (
+              <div className="rounded-2xl border border-dashed border-brand-cyan/25 bg-brand-cyan/5 p-4 text-sm text-slate-300">
+                Chưa có thao tác đang bật trong cấu hình này.
+              </div>
+            )}
           </div>
         </div>
 
@@ -219,7 +253,7 @@ export default function WorkflowView({ runtime, logs = [] }: { runtime?: Runtime
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="text-xs uppercase tracking-[0.24em] text-brand-cyan">Mô phỏng bàn tay</div>
-                <h3 className="mt-2 text-xl font-semibold text-white">{activeMode.actionPreview}</h3>
+                <h3 className="mt-2 text-xl font-semibold text-white">{actionPreview}</h3>
               </div>
               <div className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-sm text-emerald-100">Sensor: Active</div>
             </div>
@@ -240,12 +274,12 @@ export default function WorkflowView({ runtime, logs = [] }: { runtime?: Runtime
               </div>
               <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-brand-cyan/20 bg-black/50 px-3 py-2 text-xs text-cyan-100 backdrop-blur">
                 <CircleDot className="h-4 w-4" />
-                {activeMode.activeGesture}
+                {activeGesture}
               </div>
             </div>
 
             <div className="mt-5 grid gap-2 rounded-2xl border border-white/10 bg-black/25 p-4">
-              {activeMode.practice.map((step, index) => (
+              {activeModeMeta.practice.map((step, index) => (
                 <div key={step} className="flex items-start gap-3 text-sm text-slate-300">
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-brand-cyan/25 bg-brand-cyan/10 text-xs text-cyan-100">{index + 1}</span>
                   <span>{step}</span>
@@ -300,6 +334,51 @@ export default function WorkflowView({ runtime, logs = [] }: { runtime?: Runtime
   )
 }
 
+function mappingToGuideFunction(mapping: FunctionMapping): GuideFunction {
+  return {
+    title: mapping.label,
+    gesture: mapping.gesture,
+    description: mapping.description || fallbackDescription(mapping.action),
+    icon: resolveGuideIcon(mapping),
+    tone: mapping.tone ?? toneFromMapping(mapping),
+    action: mapping.action,
+    gestureEvent: mapping.gesture_event,
+  }
+}
+
+function resolveGuideIcon(mapping: FunctionMapping): LucideIcon {
+  if (mapping.category && categoryIcons[mapping.category]) return categoryIcons[mapping.category]
+  if (mapping.action.startsWith('mouse.move')) return MousePointer2
+  if (mapping.action.includes('click')) return Mouse
+  if (mapping.action.includes('scroll')) return ScrollText
+  if (mapping.action.includes('drag') || mapping.action === 'mouse.down' || mapping.action === 'mouse.up') return Hand
+  if (mapping.action.startsWith('media.volume')) return SlidersHorizontal
+  if (mapping.action.startsWith('media.')) return Play
+  if (mapping.action.startsWith('game.attack') || mapping.action.startsWith('game.skill')) return ShieldCheck
+  if (mapping.action.startsWith('game.')) return Gamepad2
+  if (mapping.action.startsWith('keyboard.')) return Keyboard
+  return Sparkles
+}
+
+function toneFromMapping(mapping: FunctionMapping): GuideFunction['tone'] {
+  if (mapping.category === 'Combat' || mapping.action.includes('attack')) return 'red'
+  if (mapping.category === 'System' || mapping.action.includes('hotkey')) return 'amber'
+  if (mapping.action.startsWith('media.') || mapping.action.startsWith('game.') || mapping.category === 'Tabs') return 'blue'
+  return 'cyan'
+}
+
+function fallbackDescription(action: string) {
+  if (action === 'mouse.move') return 'Dùng cử chỉ đã gán để điều khiển con trỏ theo chuyển động tay.'
+  if (action === 'mouse.left_click') return 'Thực hiện cử chỉ đã gán một nhịp ngắn để chọn mục đang trỏ.'
+  if (action === 'mouse.right_click') return 'Thực hiện cử chỉ đã gán để mở menu ngữ cảnh.'
+  if (action === 'mouse.scroll') return 'Di chuyển tay theo hướng đã gán để cuộn nội dung.'
+  if (action.includes('drag')) return 'Giữ cử chỉ, di chuyển tay tới vị trí đích, sau đó thả để hoàn tất.'
+  if (action.startsWith('media.')) return 'Dùng cử chỉ đã gán để điều khiển nội dung đang phát.'
+  if (action.startsWith('game.')) return 'Dùng cử chỉ đã gán để gửi lệnh nhanh trong game.'
+  if (action.startsWith('keyboard.')) return 'Kích hoạt phím hoặc phím tắt đã cấu hình.'
+  return `Thao tác được ánh xạ tới ${action}.`
+}
+
 function Badge({ label }: { label: string }) {
   return <span className="rounded-full border border-brand-cyan/20 bg-brand-cyan/10 px-3 py-1 text-sm text-cyan-100">{label}</span>
 }
@@ -323,6 +402,9 @@ function FunctionCard({ item }: { item: GuideFunction }) {
       <h4 className="mt-4 text-base font-semibold text-white">{item.title}</h4>
       <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/25 px-2 py-1 font-mono text-xs text-cyan-100">{item.gesture}</div>
       <p className="mt-3 text-sm leading-6 text-slate-400">{item.description}</p>
+      <p className="mt-3 break-all font-mono text-xs text-slate-500">
+        {item.gestureEvent ?? 'custom_gesture'} {'->'} {item.action}
+      </p>
     </div>
   )
 }

@@ -1,11 +1,17 @@
 """FastAPI app for Phase 18 backend/frontend integration."""
 
+import asyncio
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend.routers import ai, app_control, calibration, cameras, gestures, health, mic, models, profiles, runtime, settings, training
+from backend.services.runtime_service import runtime_service
 from backend.websocket import runtime as runtime_ws
+
+logger = logging.getLogger("acv.backend")
 
 app = FastAPI(title="ACV Gesture Control API", version="0.18.0")
 
@@ -36,6 +42,34 @@ app.include_router(models.router)
 app.include_router(runtime_ws.router)
 
 
+@app.on_event("startup")
+async def configure_asyncio_disconnect_filter() -> None:
+    """Suppress noisy Windows socket-reset traces from browser/WebSocket reconnects."""
+
+    loop = asyncio.get_running_loop()
+    previous_handler = loop.get_exception_handler()
+
+    def handle_loop_exception(loop: asyncio.AbstractEventLoop, context: dict) -> None:
+        exception = context.get("exception")
+        if is_expected_client_disconnect(exception):
+            logger.debug("Suppressed expected client disconnect: %s", exception)
+            return
+        if previous_handler is not None:
+            previous_handler(loop, context)
+            return
+        loop.default_exception_handler(context)
+
+    loop.set_exception_handler(handle_loop_exception)
+
+
+@app.on_event("shutdown")
+async def stop_runtime_on_shutdown() -> None:
+    try:
+        runtime_service.stop()
+    except Exception as exc:  # pragma: no cover - defensive shutdown guard
+        logger.warning("Runtime shutdown cleanup failed: %s", exc)
+
+
 @app.exception_handler(Exception)
 async def unhandled_error_handler(request: Request, exc: Exception) -> JSONResponse:
     return JSONResponse(
@@ -47,3 +81,11 @@ async def unhandled_error_handler(request: Request, exc: Exception) -> JSONRespo
             "code": "internal_error",
         },
     )
+
+
+def is_expected_client_disconnect(exception: object) -> bool:
+    if isinstance(exception, (ConnectionResetError, BrokenPipeError)):
+        return True
+    if isinstance(exception, OSError):
+        return getattr(exception, "winerror", None) in {995, 10053, 10054}
+    return False

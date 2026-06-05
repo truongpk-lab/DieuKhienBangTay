@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import socket
 import subprocess
-import sys
 import threading
 import time
-import os
 import urllib.request
 import webbrowser
 from argparse import ArgumentParser
@@ -23,6 +22,7 @@ BACKEND_URL = "http://127.0.0.1:8000"
 
 
 def main(argv: list[str] | None = None) -> int:
+    configure_process_environment()
     parser = ArgumentParser(description="Launch ACV Gesture Control desktop app.")
     parser.add_argument(
         "--self-test",
@@ -46,24 +46,30 @@ def main(argv: list[str] | None = None) -> int:
     if args.self_test:
         return self_test()
 
-    if not port_available(8000) and not wait_for_backend(timeout_sec=1.0):
+    backend_port_busy = not port_available(8000)
+    if backend_port_busy and not wait_for_backend(timeout_sec=1.0):
         print("Port 8000 is already in use and ACV backend health is not responding.")
+        print(r"Run stop_acv.bat, then start ACV again.")
         return 1
 
-    server = start_backend()
-    if not wait_for_backend():
-        server.should_exit = True
-        print("Backend did not become ready at", BACKEND_URL)
-        return 1
+    server = None if backend_port_busy else start_backend()
+    try:
+        if not wait_for_backend():
+            print("Backend did not become ready at", BACKEND_URL)
+            return 1
+        if backend_port_busy:
+            print("Using existing ACV backend at", BACKEND_URL)
 
-    open_desktop_or_browser(server)
-    server.should_exit = True
-    return 0
+        open_desktop_or_browser(server)
+        return 0
+    finally:
+        stop_backend(server)
 
 
 def self_test() -> int:
     """Validate the one-command runtime path without opening a GUI window."""
 
+    configure_process_environment()
     print("ACV launcher self-test starting from", ROOT)
     if not FRONTEND_INDEX.exists() and not build_frontend():
         return 1
@@ -88,9 +94,13 @@ def self_test() -> int:
         print("ACV launcher self-test ok")
         return 0
     finally:
-        if server is not None:
-            server.should_exit = True
-            time.sleep(0.5)
+        stop_backend(server, timeout_sec=2.0)
+
+
+def configure_process_environment() -> None:
+    """Keep desktop startup quiet before optional ML packages are imported."""
+
+    os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
 
 def missing_python_packages() -> list[str]:
@@ -144,13 +154,24 @@ def start_backend():
         "backend.app:app",
         host="127.0.0.1",
         port=8000,
-        log_level="info",
+        log_level=os.environ.get("ACV_UVICORN_LOG_LEVEL", "warning"),
+        access_log=False,
         reload=False,
     )
     server = uvicorn.Server(config)
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
+    server._acv_thread = thread
     return server
+
+
+def stop_backend(server, timeout_sec: float = 4.0) -> None:
+    if server is None:
+        return
+    server.should_exit = True
+    thread = getattr(server, "_acv_thread", None)
+    if isinstance(thread, threading.Thread) and thread.is_alive():
+        thread.join(timeout=timeout_sec)
 
 
 def wait_for_backend(timeout_sec: float = 10.0) -> bool:
@@ -172,15 +193,15 @@ def request_json(path: str, method: str = "GET") -> dict[str, Any]:
         return json.loads(response.read().decode("utf-8"))
 
 
-def open_desktop_or_browser(server) -> None:
+def open_desktop_or_browser(server=None) -> None:
     try:
         import webview  # type: ignore[import-not-found]
     except ModuleNotFoundError:
         print("pywebview missing; opening browser fallback.")
         webbrowser.open(FRONTEND_INDEX.as_uri())
-        print("Press Ctrl+C to stop backend.")
+        print("Press Ctrl+C to close ACV launcher.")
         try:
-            while not server.should_exit:
+            while server is None or not server.should_exit:
                 time.sleep(0.5)
         except KeyboardInterrupt:
             return
