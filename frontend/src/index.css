@@ -51,10 +51,16 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  overflow: hidden;
   background:
     linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px),

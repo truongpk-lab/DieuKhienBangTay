@@ -17,6 +17,11 @@ def gesture_logs() -> list[dict[str, str]]:
     return gesture_service.logs()
 
 
+@router.delete("/logs", response_model=list[GestureLog])
+def clear_gesture_logs() -> list[dict[str, str]]:
+    return gesture_service.clear_logs()
+
+
 @router.post("/test-event")
 def test_event(request: GestureTestEventRequest) -> dict:
     return gesture_service.test_event(

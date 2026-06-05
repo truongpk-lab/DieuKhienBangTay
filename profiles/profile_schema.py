@@ -24,6 +24,40 @@ REQUIRED_FUNCTION_FIELDS = {
     "enabled",
 }
 
+ALLOWED_ACTIONS = {
+    "mouse.move",
+    "mouse.left_click",
+    "mouse.right_click",
+    "mouse.scroll",
+    "mouse.down",
+    "mouse.up",
+    "mouse.drag",
+    "keyboard.hotkey",
+    "keyboard.press",
+    "keyboard.release",
+    "keyboard.switch_tab",
+    "keyboard.copy",
+    "keyboard.paste",
+    "media.play_pause",
+    "media.next",
+    "media.previous",
+    "media.volume_up",
+    "media.volume_down",
+    "media.seek_forward",
+    "media.seek_backward",
+    "media.fullscreen",
+    "game.left",
+    "game.right",
+    "game.move_left",
+    "game.move_right",
+    "game.jump",
+    "game.attack",
+    "game.dash",
+    "game.block",
+    "game.crouch",
+    "game.skill_1",
+}
+
 
 class ProfileValidationError(ValueError):
     """Raised when a profile JSON object does not match the base schema."""
@@ -78,6 +112,7 @@ def validate_profile(profile: Mapping[str, Any]) -> Mapping[str, Any]:
         raise ProfileValidationError("functions must not be empty")
 
     seen_ids: set[str] = set()
+    seen_gesture_events: set[str] = set()
     for index, function in enumerate(functions):
         function_path = f"functions[{index}]"
         _require_mapping(function, function_path)
@@ -99,5 +134,19 @@ def validate_profile(profile: Mapping[str, Any]) -> Mapping[str, Any]:
         if function_id in seen_ids:
             raise ProfileValidationError(f"duplicate function id: {function_id}")
         seen_ids.add(function_id)
+
+        gesture_event = function["gesture_event"]
+        if function.get("enabled") and gesture_event in seen_gesture_events:
+            raise ProfileValidationError(f"duplicate enabled gesture_event: {gesture_event}")
+        if function.get("enabled"):
+            seen_gesture_events.add(gesture_event)
+
+        action = function["action"]
+        if action not in ALLOWED_ACTIONS:
+            raise ProfileValidationError(f"unsupported action: {action}")
+
+        payload = function.get("payload", {})
+        if payload is not None and not isinstance(payload, Mapping):
+            raise ProfileValidationError(f"{function_path}.payload must be an object")
 
     return profile

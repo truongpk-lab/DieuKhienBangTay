@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { createRuntimeSocket, getGestureLogs, getProfiles, getRuntimeStatus } from './api/backend'
+import { getProfiles } from './api/profileApi'
+import { getGestureLogs, getRuntimeStatus } from './api/runtimeApi'
+import { createRuntimeSocket, type RuntimeSocketMessage } from './api/websocket'
 import SideNavBar from './components/SideNavBar'
 import TopAppBar from './components/TopAppBar'
 import { mockLogs, mockProfiles, mockRuntime, type AppView, type GestureLog, type Profile, type RuntimeStatus } from './types'
@@ -14,7 +16,7 @@ const viewTitles: Record<AppView, string> = {
   dashboard: 'Dashboard trung tâm',
   config: 'Thiết lập cấu hình',
   training: 'Huấn luyện cử chỉ',
-  workflow: 'Quy trình kéo thả',
+  workflow: 'Hướng dẫn thao tác',
 }
 
 function App() {
@@ -41,12 +43,14 @@ function App() {
           setLogs(gestureLogs)
           setBackendOnline(true)
         }
-      } catch {
+      } catch (error) {
         if (!canceled) {
-          setRuntime(mockRuntime)
-          setProfiles(mockProfiles)
-          setLogs(mockLogs)
           setBackendOnline(false)
+          setRuntime((current) => ({
+            ...current,
+            lastError: error instanceof Error ? error.message : 'Backend offline',
+            trackingStatus: 'Backend offline',
+          }))
         }
       }
     }
@@ -61,11 +65,20 @@ function App() {
 
   useEffect(() => {
     let socket: WebSocket | null = null
+    let reconnectTimer = 0
+    let closed = false
     try {
-      socket = createRuntimeSocket()
+      const connect = () => {
+        socket = createRuntimeSocket()
       socket.onmessage = (event) => {
-        const payload = JSON.parse(event.data) as { runtime?: RuntimeStatus; logs?: GestureLog[] }
-        if (payload.runtime) {
+        let payload: RuntimeSocketMessage
+        try {
+          payload = JSON.parse(event.data) as RuntimeSocketMessage
+        } catch {
+          setBackendOnline(false)
+          return
+        }
+        if (payload.type === 'runtime_update' && payload.runtime) {
           setRuntime(payload.runtime)
           setBackendOnline(true)
         }
@@ -73,26 +86,52 @@ function App() {
           setLogs(payload.logs)
         }
       }
-      socket.onerror = () => setBackendOnline(false)
+        socket.onerror = () => setBackendOnline(false)
+        socket.onclose = () => {
+          if (!closed) {
+            setBackendOnline(false)
+            reconnectTimer = window.setTimeout(connect, 1500)
+          }
+        }
+      }
+      connect()
     } catch {
       setBackendOnline(false)
     }
 
-    return () => socket?.close()
+    return () => {
+      closed = true
+      window.clearTimeout(reconnectTimer)
+      socket?.close()
+    }
   }, [])
 
   return (
-    <main className="min-h-screen overflow-hidden text-slate-50">
-      <div className="flex min-h-screen">
+    <main className="h-screen overflow-hidden text-slate-50">
+      <div className="flex h-full min-h-0">
         <SideNavBar activeView={activeView} onChange={setActiveView} />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <TopAppBar title={title} runtime={runtime} backendOnline={backendOnline} />
+          {(!backendOnline || runtime.lastError) && (
+            <div className="mx-4 mt-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100 sm:mx-5">
+              {runtime.lastError || 'Backend offline; chức năng thật đang bị tạm khóa cho đến khi API chạy lại.'}
+            </div>
+          )}
           <section className="min-h-0 flex-1 overflow-y-auto px-4 pb-24 sm:px-5 lg:pb-5">
-            {activeView === 'onboarding' && <OnboardingView />}
-            {activeView === 'dashboard' && <DashboardView runtime={runtime} logs={logs} onRuntimeChange={setRuntime} />}
+            {activeView === 'onboarding' && <OnboardingView profiles={profiles} onComplete={() => setActiveView('dashboard')} />}
+            {activeView === 'dashboard' && (
+              <DashboardView
+                runtime={runtime}
+                logs={logs}
+                profiles={profiles}
+                onRuntimeChange={setRuntime}
+                onLogsChange={setLogs}
+                onOpenSettings={() => setActiveView('config')}
+              />
+            )}
             {activeView === 'config' && <ConfigView profiles={profiles} />}
             {activeView === 'training' && <TrainingView profiles={profiles} />}
-            {activeView === 'workflow' && <WorkflowView />}
+            {activeView === 'workflow' && <WorkflowView runtime={runtime} logs={logs} />}
           </section>
         </div>
       </div>

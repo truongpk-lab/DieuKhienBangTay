@@ -37,7 +37,7 @@ export default function HandCameraHUD({ compact = false, showWarnings = false }:
             Low light warning
           </div>
           <div className="rounded-xl border border-red-300/25 bg-red-400/10 px-3 py-2 text-red-100">
-            Camera missing fallback
+            Camera unavailable
           </div>
         </div>
       )}

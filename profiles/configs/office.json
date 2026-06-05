@@ -139,6 +139,17 @@
       }
     },
     {
+      "id": "swipe_right_tab",
+      "label": "Chuyển tab phải",
+      "gesture_event": "swipe_right",
+      "gesture": "Swipe Right",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "keys": ["ctrl", "tab"]
+      }
+    },
+    {
       "id": "copy",
       "label": "Copy",
       "gesture_event": "pinch_hold_left",

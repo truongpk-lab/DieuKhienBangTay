@@ -51,6 +51,25 @@ class ActionMapper:
                 }
         return None
 
+    def action_for(self, gesture_event: str) -> dict[str, Any] | None:
+        """Compatibility API returning the action payload for one gesture."""
+
+        mapping = self.map_gesture_event(gesture_event)
+        if mapping is None:
+            return None
+        action = {
+            "action": mapping["action"],
+            "gesture_event": mapping["gesture_event"],
+            "function_id": mapping["function_id"],
+        }
+        payload = mapping.get("payload", {})
+        if isinstance(payload, Mapping):
+            action.update(payload)
+            keys = payload.get("keys") or payload.get("shortcut") or payload.get("hotkey")
+            if isinstance(keys, str):
+                action["keys"] = [key.strip() for key in keys.replace("+", " ").split() if key.strip()]
+        return action
+
     def execute_gesture_event(
         self,
         gesture_event: str | Mapping[str, Any],

@@ -2,7 +2,7 @@ from .mouse_controller import MouseController
 
 
 class MouseControlAdapter:
-    """Thin compatibility layer over the existing MouseController."""
+    """Thin compatibility layer over the canonical hand-mouse controller."""
 
     def __init__(self, controller=None):
         self.controller = controller if controller is not None else MouseController()

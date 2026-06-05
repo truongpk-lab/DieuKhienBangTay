@@ -22,6 +22,36 @@ def get_profile(profile_id: str) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@router.put("/{profile_id}")
+def save_profile(profile_id: str, profile: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return profile_service.save_profile(profile_id, profile)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("")
+def create_profile(profile: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return profile_service.create_profile(profile)
+    except FileExistsError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.delete("/{profile_id}")
+def delete_profile(profile_id: str) -> dict[str, Any]:
+    try:
+        return profile_service.delete_profile(profile_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
 @router.post("/{profile_id}/activate")
 def activate_profile(profile_id: str) -> dict[str, Any]:
     try:

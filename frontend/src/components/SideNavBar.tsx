@@ -6,7 +6,7 @@ const items: Array<{ id: AppView; label: string; icon: typeof Gauge }> = [
   { id: 'onboarding', label: 'Thiết lập ban đầu', icon: Hand },
   { id: 'config', label: 'Cấu hình', icon: Settings },
   { id: 'training', label: 'Huấn luyện cử chỉ', icon: Brain },
-  { id: 'workflow', label: 'Quy trình kéo thả', icon: Layers },
+  { id: 'workflow', label: 'Hướng dẫn thao tác', icon: Layers },
 ]
 
 type SideNavBarProps = {

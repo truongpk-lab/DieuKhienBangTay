@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+opencv-python
+mediapipe
+numpy
+scikit-learn
+joblib
+pyautogui
+google-genai
+sounddevice

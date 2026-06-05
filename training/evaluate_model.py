@@ -70,7 +70,7 @@ def numeric_feature_vector(features: Any) -> np.ndarray:
 
 def static_sample_features(sample: Mapping[str, Any]) -> np.ndarray:
     if sample.get("landmarks"):
-        from DIEU_KHIEN_CHUOT.hand_feature_utils import extract_landmark_features
+        from backend.hand_runtime.feature_utils import extract_landmark_features
 
         return extract_landmark_features(sample["landmarks"])
     features = numeric_feature_vector(sample.get("features"))
@@ -86,7 +86,7 @@ def sequence_sample_features(sample: Mapping[str, Any], max_feature_count: int |
     for frame in sample.get("frames", []):
         vector = numeric_feature_vector(frame.get("features"))
         if not vector.size and frame.get("landmarks"):
-            from DIEU_KHIEN_CHUOT.hand_feature_utils import extract_landmark_features
+            from backend.hand_runtime.feature_utils import extract_landmark_features
 
             vector = extract_landmark_features(frame["landmarks"])
         if vector.size:
@@ -147,7 +147,7 @@ def _max_frame_feature_count(samples: Sequence[Mapping[str, Any]]) -> int:
         for frame in sample.get("frames", []):
             vector = numeric_feature_vector(frame.get("features"))
             if not vector.size and frame.get("landmarks"):
-                from DIEU_KHIEN_CHUOT.hand_feature_utils import extract_landmark_features
+                from backend.hand_runtime.feature_utils import extract_landmark_features
 
                 vector = extract_landmark_features(frame["landmarks"])
             max_count = max(max_count, int(vector.size))

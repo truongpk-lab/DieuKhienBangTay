@@ -1,6 +1,6 @@
 # TÀI LIỆU CẤU HÌNH CHI TIẾT & CHUẨN KIẾN TRÚC GIAO DIỆN ACV GESTURE CONTROL
 
-Tài liệu này đóng vai trò là **Specification chuẩn hóa** mô tả chi tiết kiến trúc, cấu trúc UI/UX, hệ màu sắc, token tinh chỉnh, cách chia component, và các thư viện cần sử dụng để giúp Code Agent xây dựng ứng dụng **ACV Gesture Control** chính xác 100% so với bản thiết kế mẫu trên cả 5 trang giao diện: **Onboarding (Thiết lập ban đầu), Dashboard (Bảng điều khiển trung tâm), Configuration (Thiết lập cấu hình), Training (Huấn luyện cử chỉ),** và **Detailed Workflow (Quy trình Kéo thả)**.
+Tài liệu này đóng vai trò là **Specification chuẩn hóa** mô tả chi tiết kiến trúc, cấu trúc UI/UX, hệ màu sắc, token tinh chỉnh, cách chia component, và các thư viện cần sử dụng để giúp Code Agent xây dựng ứng dụng **ACV Gesture Control** chính xác 100% so với bản thiết kế mẫu trên cả 5 trang giao diện: **Onboarding (Thiết lập ban đầu), Dashboard (Bảng điều khiển trung tâm), Configuration (Thiết lập cấu hình), Training (Huấn luyện cử chỉ),** và **Hướng dẫn thao tác**.
 
 ---
 
@@ -164,23 +164,17 @@ Dưới đây là đặc tả chi tiết cho từng cấu trúc khung HTML của
 
 ---
 
-### Trang 5: Quy Trình Chi Tiết Các Bước (Detailed Step Workflow)
-**Mục tiêu:** Mô tả động học trực quan giúp người dùng hiểu trạng thái từng bước hành vi của cử chỉ Kéo thả (Pinch Drag Drop).
+### Trang 5: Hướng Dẫn Thao Tác
+**Mục tiêu:** Cung cấp trung tâm hướng dẫn tiếng Việt giúp người dùng chọn chế độ, hiểu thao tác tay, luyện cử chỉ và xử lý lỗi thường gặp trong ACV Gesture Control.
 
 #### Sơ đồ Layout và DOM chính:
-*   Màn hình có một Glass Panel đặt trung tâm.
-*   **Header khu vực:** Trình bày icon lớn `swipe_up` và tiêu đề chuyển sắc bắt mắt: **QUY TRÌNH KÉO THẢ (PINCH DRAG DROP)**.
-*   **Thành phần Stepper 5 bước nằm ngang:**
-    *   Có một đường xương sống chạy ngang kết nối 5 bước. **Đoạn nối từ bước 1 tới bước 3 được thắp sáng rực rỡ màu Neon Cyan**, đoạn tiếp theo hướng về bước 5 có màu tro mờ của Surface.
-    *   Mỗi bước tròn có trạng thái ánh sáng khác nhau:
-        1.  *Bước 1: Kẹp ngón* (Xanh rực - biểu thị hoàn thành hoàn hảo).
-        2.  *Bước 2: Giữ* (Xanh rực - biểu thị hoàn thành hoàn hảo).
-        3.  *Bước 3: Di chuyển tay* (Trực quan hóa Active: Có bóng tròn đồng tâm lan tỏa kiểu sóng Radar, viền thẻ nét đậm rực rỡ và nhấp nháy liên tục xung quanh).
-        4.  *Bước 4: Thả ngón* (Màu xám mờ - chuẩn bị).
-        5.  *Bước 5: Hoàn thành* (Màu xám mờ - chuẩn bị).
-*   **Khung chỉ dẫn động thái ở cuối:**
-    *   Card kính hiển thị tiêu đề trạng thái phát sáng xanh: *"Trạng thái hiện tại: Đang theo dõi chuyển động"*.
-    *   Kèm hai Badge thông số hoạt động của cảm biến: `Sensor: Active` và độ trễ phản hồi cực thấp `Latency: 12ms`.
+*   Màn hình dùng Bento Grid nhiều Glass Panel, giữ nền Deep Obsidian, viền Neon Cyan và Electric Blue.
+*   **Header khu vực:** Hiển thị nhãn `Trung tâm hướng dẫn`, tiêu đề **Hướng dẫn thao tác**, mô tả ngắn và thanh chọn chế độ.
+*   **Thanh chọn chế độ:** 4 chế độ `Văn phòng`, `Giải trí`, `Game 2D`, `Tùy chỉnh`; trạng thái active có glow Cyan và icon Lucide tương ứng.
+*   **Thư viện chức năng theo chế độ:** Mỗi chế độ hiển thị card chức năng, gesture gợi ý, mô tả thao tác và icon. Các nhóm bắt buộc gồm di chuyển chuột, click, kéo thả, cuộn trang, chuyển tab/phím tắt, play/pause, game action và tác vụ tùy chỉnh.
+*   **Khu mô phỏng bàn tay:** Tái dùng `HandSkeleton` để hiển thị điểm tay neon, có hiệu ứng pulse/radar bằng Framer Motion, badge sensor và gesture đang minh họa.
+*   **Khối hướng dẫn chuyên nghiệp:** Có quy trình thực hành nhanh, checklist trước khi dùng, lỗi thường gặp, badge độ khó/latency/cảm biến và tín hiệu gần đây bằng tiếng Việt.
+*   **Lưu ý kỹ thuật:** Trang này là hướng dẫn thao tác, không gọi realtime workflow API/reset/test; route `workflow` và file `WorkflowView.tsx` vẫn giữ nguyên để tương thích cấu trúc 5 màn hình.
 
 ---
 

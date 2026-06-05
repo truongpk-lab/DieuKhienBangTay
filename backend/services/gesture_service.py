@@ -29,6 +29,10 @@ class GestureService:
     def logs(self) -> list[dict[str, str]]:
         return list(self.state.logs)
 
+    def clear_logs(self) -> list[dict[str, str]]:
+        self.state.logs.clear()
+        return []
+
     def test_event(
         self,
         gesture_event: str,

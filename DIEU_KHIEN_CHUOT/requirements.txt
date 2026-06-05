@@ -4,6 +4,3 @@ numpy
 scikit-learn
 joblib
 pyautogui
-pywebview
-fastapi
-uvicorn[standard]

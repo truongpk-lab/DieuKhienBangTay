@@ -1,0 +1,12 @@
+{
+  "camera_id": "0",
+  "microphone_id": null,
+  "hand_mode": "right",
+  "speed": 1.5,
+  "sensitivity": 75,
+  "smoothing": 3,
+  "active_profile_id": "office",
+  "auto_hide_on_start": true,
+  "ai_provider": "gemini",
+  "voice_commands_enabled": false
+}

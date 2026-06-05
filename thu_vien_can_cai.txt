@@ -6,6 +6,9 @@ Runtime Windows:
 - Python 3.12.x qua Python Launcher `py -3`
 
 Python packages:
+- fastapi
+- uvicorn
+- pydantic
 - opencv-python
 - mediapipe
 - numpy
@@ -13,9 +16,17 @@ Python packages:
 - joblib
 - pyautogui
 - pywebview
+- keyboard
+- pystray
+- Pillow
+- google-genai
+- sounddevice
 
 Cai Python packages:
 cd D:\github\link\DieuKhienBangTay
+py -3 -m pip install -r backend\requirements.txt
+
+Neu can chay script legacy trong DIEU_KHIEN_CHUOT rieng:
 py -3 -m pip install -r DIEU_KHIEN_CHUOT\requirements.txt
 
 Frontend npm dependencies:

@@ -19,6 +19,7 @@ class ActionExecutor:
         "mouse.scroll",
         "mouse.down",
         "mouse.up",
+        "mouse.drag",
     }
 
     KEYBOARD_ACTIONS = {
@@ -27,6 +28,8 @@ class ActionExecutor:
         "game.crouch",
         "game.dash",
         "game.jump",
+        "game.left",
+        "game.right",
         "game.move_left",
         "game.move_right",
         "game.skill_1",
@@ -103,6 +106,11 @@ class ActionExecutor:
         if action == "mouse.up":
             return self.mouse_adapter.mouse_up()
 
+        if action == "mouse.drag":
+            if "x" in payload and "y" in payload:
+                return self.mouse_adapter.drag_move(payload["x"], payload["y"])
+            return self.mouse_adapter.mouse_down()
+
         raise ValueError(f"unsupported mouse action: {action}")
 
     def _execute_keyboard(self, action: str, payload: Mapping[str, Any]):
@@ -141,10 +149,19 @@ class ActionExecutor:
         return self.keyboard_controller.hotkey(*keys)
 
     def _execute_game_action(self, payload: Mapping[str, Any], action: str):
+        aliases = {
+            "game.left": "left",
+            "game.right": "right",
+            "game.move_left": "left",
+            "game.move_right": "right",
+            "game.jump": "space",
+            "game.attack": "j",
+            "game.dash": "shift",
+        }
         if payload.get("keys") or payload.get("shortcut") or payload.get("hotkey"):
             return self._execute_hotkey(payload, action)
 
-        key = payload.get("key")
+        key = payload.get("key") or aliases.get(action)
         if not key:
             raise ValueError(f"{action} requires key or hotkey payload")
 

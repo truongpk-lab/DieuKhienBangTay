@@ -1,35 +1,56 @@
 from fastapi import APIRouter
 
-from backend.runtime_state import runtime_state
-from backend.schemas import RuntimeStatusResponse
-from backend.services.camera_service import CameraService
-from backend.services.hand_tracker_service import HandTrackerService
+from backend.schemas import RuntimeStatusResponse, WorkflowStateResponse, WorkflowTestRequest
+from backend.services.runtime_service import runtime_service
 
 router = APIRouter(prefix="/api/runtime", tags=["runtime"])
-camera_service = CameraService()
-hand_tracker_service = HandTrackerService()
 
 
 @router.get("/status", response_model=RuntimeStatusResponse)
 def runtime_status() -> dict:
-    return runtime_state.runtime_payload()
+    return runtime_service.status()
 
 
 @router.post("/start", response_model=RuntimeStatusResponse)
 def start_runtime() -> dict:
-    camera_service.start()
-    hand_tracker_service.start()
-    runtime_state.active = True
-    runtime_state.tracking_status = "Active Tracking"
-    runtime_state.add_log("system", "Runtime tracking started")
-    return runtime_state.runtime_payload()
+    return runtime_service.start()
 
 
 @router.post("/stop", response_model=RuntimeStatusResponse)
 def stop_runtime() -> dict:
-    camera_service.stop()
-    hand_tracker_service.stop()
-    runtime_state.active = False
-    runtime_state.tracking_status = "Paused"
-    runtime_state.add_log("system", "Runtime tracking stopped")
-    return runtime_state.runtime_payload()
+    return runtime_service.stop()
+
+
+@router.post("/pause", response_model=RuntimeStatusResponse)
+def pause_runtime() -> dict:
+    return runtime_service.pause()
+
+
+@router.post("/resume", response_model=RuntimeStatusResponse)
+def resume_runtime() -> dict:
+    return runtime_service.resume()
+
+
+@router.post("/recenter", response_model=RuntimeStatusResponse)
+def recenter_runtime() -> dict:
+    return runtime_service.recenter()
+
+
+@router.get("/workflow", response_model=WorkflowStateResponse)
+def workflow_state() -> dict:
+    return runtime_service.workflow_state()
+
+
+@router.post("/workflow/test", response_model=WorkflowStateResponse)
+def test_workflow_state(request: WorkflowTestRequest) -> dict:
+    return runtime_service.set_workflow_state(
+        state=request.state,
+        event=request.event,
+        pinch_distance=request.pinch_distance,
+        confidence=request.confidence,
+    )
+
+
+@router.post("/workflow/reset", response_model=WorkflowStateResponse)
+def reset_workflow_state() -> dict:
+    return runtime_service.reset_workflow()
