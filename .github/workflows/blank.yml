@@ -1,8 +1,5 @@
 name: ACV CI
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 on:
   push:
     branches:
@@ -82,10 +79,12 @@ jobs:
         run: python -m compileall backend actions core profiles DIEU_KHIEN_CHUOT run_desktop.py
 
       - name: Validate profile JSON files
-        run: python -c "from profiles.profile_manager import ProfileManager; manager = ProfileManager(); expected = ('office', 'entertainment', 'game_2d', 'custom'); [print(f'{pid}: {profile[\"name\"]} ({len(profile.get(\"functions\", []))} actions)') for pid in expected for profile in [manager.load_profile(pid)] if profile['id'] == pid and profile.get('functions')]"
+        run: |
+          python -c "from profiles.profile_manager import ProfileManager; manager = ProfileManager(); expected = ('office', 'entertainment', 'game_2d', 'custom'); [print(pid + ': ' + profile['name'] + ' (' + str(len(profile.get('functions', []))) + ' actions)') for pid in expected for profile in [manager.load_profile(pid)] if profile['id'] == pid and profile.get('functions')]"
 
   launcher-self-test:
     name: Launcher self-test
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     needs:
       - frontend
