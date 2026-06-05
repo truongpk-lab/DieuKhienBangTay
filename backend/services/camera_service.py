@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import platform
 from threading import Lock
 from typing import Any
 
@@ -39,14 +40,14 @@ class CameraService:
             "mock": False,
         }
 
-    def list_cameras(self, max_devices: int = 5) -> list[dict[str, str | bool]]:
+    def list_cameras(self, max_devices: int = 8) -> list[dict[str, str | bool]]:
         if not CV2_AVAILABLE:
             self.state.camera_status = "OpenCV is not installed"
             return []
 
         devices: list[dict[str, str | bool]] = []
         for index in range(max_devices):
-            capture = cv2.VideoCapture(index)
+            capture = self._open_capture(index)
             try:
                 if capture.isOpened():
                     devices.append(
@@ -73,7 +74,7 @@ class CameraService:
                 return self.status()
 
             self._camera_index = self._parse_camera_id(camera_id)
-            capture = cv2.VideoCapture(self._camera_index)
+            capture = self._open_capture(self._camera_index)
             if not capture.isOpened():
                 capture.release()
                 self._capture = None
@@ -108,3 +109,18 @@ class CameraService:
             return int(camera_id)
         except (TypeError, ValueError) as exc:
             raise ValueError(f"camera_id must be numeric for OpenCV cameras: {camera_id}") from exc
+
+    def _open_capture(self, camera_index: int):
+        for backend_api in self._preferred_backends():
+            capture = cv2.VideoCapture(camera_index, backend_api)
+            if hasattr(cv2, "CAP_PROP_OPEN_TIMEOUT_MSEC"):
+                capture.set(cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 1000)
+            if capture.isOpened():
+                return capture
+            capture.release()
+        return cv2.VideoCapture(camera_index)
+
+    def _preferred_backends(self) -> list[int]:
+        if platform.system() == "Windows":
+            return [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_ANY]
+        return [cv2.CAP_ANY]

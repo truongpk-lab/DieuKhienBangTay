@@ -453,6 +453,42 @@ Không sửa logic chuột. Build kiểm tra.
 [x] npm run build thành công bằng Windows runtime
 ```
 
+### Cập nhật phiên 2026-06-05 — Thiết lập ban đầu camera thật
+
+```text
+[x] OnboardingView không còn để lỗi camera/mic/settings làm sập toàn bộ màn hình
+[x] OnboardingView tách lỗi từng endpoint backend và hiển thị retry rõ ràng
+[x] OnboardingView thêm preview camera thật bằng Browser MediaDevices
+[x] OnboardingView vẫn yêu cầu backend online trước khi lưu/hiệu chỉnh thật
+[x] OnboardingView giữ camera_id dạng số tương thích OpenCV runtime
+[x] Backend CameraService ưu tiên OpenCV backend phù hợp trên Windows
+[x] /api/health trả 200 bằng Windows FastAPI TestClient
+[x] /api/settings trả 200 bằng Windows FastAPI TestClient
+[x] /api/cameras trả 200 và phát hiện Camera 0 thật, mock=false
+[x] Frontend dev server trả HTTP 200 tại http://127.0.0.1:5173/ bằng Windows curl.exe
+[x] npm run build thành công bằng Windows runtime
+[x] py -3 -m compileall backend actions core profiles thành công
+[x] py -3 run_desktop.py --self-test thành công, không để lại port 8000/5173 bị chiếm
+[x] Không sửa logic MouseController/demo/backend hand runtime điều khiển chuột
+```
+
+### Cập nhật phiên 2026-06-05 — API notice và 21 hand landmarks
+
+```text
+[x] Làm rõ Onboarding: camera preview trình duyệt khác với backend API 127.0.0.1:8000
+[x] OnboardingView hiện cảnh báo "Backend API chưa phản hồi" khi settings/camera/mic cùng mất kết nối
+[x] HandSkeleton vẽ đủ topology 21 landmark theo MediaPipe thay vì 16 điểm
+[x] Onboarding preview có overlay 21 landmark HUD ngay khi camera lên hình
+[x] Backend runtime payload thêm handLandmarks từ MediaPipe tracker khi phát hiện tay
+[x] Dashboard HandCameraHUD ưu tiên vẽ handLandmarks thật từ WebSocket/runtime API
+[x] Clear handLandmarks khi mất tay hoặc dừng tracker
+[x] Không sửa thuật toán MouseController/move/click/scroll
+[x] python -m compileall backend thành công
+[x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay\frontend && npm run build" thành công
+[x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay && py -3 run_desktop.py --self-test" thành công
+[x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay && py -3 -m compileall backend" thành công
+```
+
 ---
 
 ## Phase 9 — UI polish và build final

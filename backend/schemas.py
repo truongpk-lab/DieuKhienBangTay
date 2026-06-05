@@ -32,6 +32,7 @@ class RuntimeStatusResponse(BaseModel):
     active: bool
     mode: str = "idle"
     lastError: str | None = None
+    handLandmarks: list[dict[str, float]] = Field(default_factory=list)
     workflow: dict[str, Any] = Field(default_factory=dict)
 
 

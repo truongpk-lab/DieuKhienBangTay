@@ -43,6 +43,7 @@ class RuntimeState:
     workflow_event: str = "idle"
     pinch_distance: float = 0.0
     workflow_confidence: float = 0.0
+    hand_landmarks: list[dict[str, float]] = field(default_factory=list)
     logs: list[dict[str, str]] = field(
         default_factory=lambda: [
             {"time": "10:42:01", "type": "system", "message": "Backend initialized"},
@@ -70,6 +71,7 @@ class RuntimeState:
             "active": self.active,
             "mode": self.mode,
             "lastError": self.last_error,
+            "handLandmarks": self.hand_landmarks,
             "workflow": self.workflow_payload(),
         }
 
