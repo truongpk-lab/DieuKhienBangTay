@@ -25,7 +25,7 @@ Nếu làm UI, kiểm tra spec giao diện:
 
 ```powershell
 rg -n "Cyber-Clean|Breathable Void|Kinetic Glass|Deep Obsidian|Neon Cyan|Glassmorphism|Bento Grid" ACV_GESTURE_SPEC.md
-rg -n "Onboarding|Dashboard|Configuration|Training|Detailed Step Workflow" ACV_GESTURE_SPEC.md
+rg -n "Onboarding|Dashboard|Configuration|Training|Hướng Dẫn Thao Tác|Hướng dẫn thao tác" ACV_GESTURE_SPEC.md
 rg -n "Tailwind|Framer Motion|Lucide React|HandSkeleton|TerminalLog" ACV_GESTURE_SPEC.md
 ```
 
@@ -174,12 +174,12 @@ rg -n "TrainingView|Huấn luyện cử chỉ|Chụp ảnh|Quay video|Ghi hình|
 
 ---
 
-## 11. Phase 8 — Detailed Workflow UI
+## 11. Phase 8 — Hướng Dẫn Thao Tác UI
 
 ```powershell
-rg -n "Detailed Step Workflow|QUY TRÌNH KÉO THẢ|Kẹp ngón|Giữ|Di chuyển tay|Thả ngón|Hoàn thành|Latency" ACV_GESTURE_SPEC.md
+rg -n "Hướng Dẫn Thao Tác|Hướng dẫn thao tác|Văn phòng|Giải trí|Game 2D|Tùy chỉnh|HandSkeleton|Checklist trước khi dùng|Lỗi thường gặp" ACV_GESTURE_SPEC.md
 rg --files frontend/src | rg "WorkflowView"
-rg -n "WorkflowView|QUY TRÌNH KÉO THẢ|PINCH DRAG DROP|Sensor: Active|Latency: 12ms" frontend/src
+rg -n "WorkflowView|Hướng dẫn thao tác|Văn phòng|Giải trí|Game 2D|Tùy chỉnh|Sensor: Active" frontend/src
 ```
 
 ---

@@ -9,18 +9,40 @@ export type TrackingStatus = 'idle' | 'active' | 'paused'
 
 export type GestureLog = {
   time: string
-  type: 'system' | 'detection' | 'gesture'
+  type: 'system' | 'detection' | 'gesture' | 'warning' | 'error' | 'training' | 'voice' | 'ai'
   message: string
 }
 
 export type RuntimeStatus = {
   currentProfile: string
+  currentProfileId?: string
   currentGesture: string
   currentAction: string
   fps: number
   accuracy: number
   trackingStatus: string
   latency: number
+  cameraStatus?: string
+  handStatus?: string
+  micStatus?: string
+  aiStatus?: string
+  lastVoiceCommand?: string | null
+  lastTranscript?: string | null
+  commandConfidence?: number
+  active?: boolean
+  mode?: string
+  lastError?: string | null
+  workflow?: WorkflowState
+}
+
+export type AppVisibilityStatus = {
+  action: string
+  mode: 'browser' | 'desktop' | string
+  supported: boolean
+  success: boolean
+  visible: boolean
+  message: string
+  lastError?: string | null
 }
 
 export type Profile = {
@@ -32,9 +54,33 @@ export type Profile = {
 export type FunctionMapping = {
   id: string
   label: string
+  description?: string
+  category?: string
   gesture: string
-  action?: string
+  gesture_event?: string
+  action: string
+  enabled?: boolean
+  payload?: Record<string, unknown>
   tone?: 'cyan' | 'blue' | 'red'
+  gesture_options?: GestureSuggestion[]
+}
+
+export type GestureSuggestion = {
+  id: string
+  label: string
+  gesture_event: string
+  gesture: string
+  description: string
+  fit: string
+}
+
+export type WorkflowState = {
+  state: 'idle' | 'pinch_candidate' | 'holding' | 'dragging' | 'released' | 'cancelled' | string
+  event: string
+  pinchDistance: number
+  confidence: number
+  latency: number
+  sensorActive: boolean
 }
 
 export const mockProfiles: Profile[] = [

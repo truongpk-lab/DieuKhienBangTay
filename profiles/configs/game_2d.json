@@ -1,0 +1,193 @@
+{
+  "id": "game_2d",
+  "name": "Game 2D",
+  "description": "Ánh xạ hành động nhanh cho game platformer.",
+  "mouse": {
+    "speed": 1.8,
+    "sensitivity": 82,
+    "smoothing": 2
+  },
+  "gesture_filter": {
+    "hand": "right",
+    "min_confidence": 0.78,
+    "debounce_ms": 60
+  },
+  "functions": [
+    {
+      "id": "move_left",
+      "label": "Di chuyển trái",
+      "gesture_event": "tilt_left",
+      "gesture": "Tilt Left",
+      "action": "game.move_left",
+      "enabled": true,
+      "payload": {
+        "key": "a"
+      }
+    },
+    {
+      "id": "move_right",
+      "label": "Di chuyển phải",
+      "gesture_event": "tilt_right",
+      "gesture": "Tilt Right",
+      "action": "game.move_right",
+      "enabled": true,
+      "payload": {
+        "key": "d"
+      }
+    },
+    {
+      "id": "jump",
+      "label": "Nhảy",
+      "gesture_event": "swipe_up",
+      "gesture": "Swipe Up",
+      "action": "game.jump",
+      "enabled": true,
+      "payload": {
+        "key": "space"
+      }
+    },
+    {
+      "id": "crouch",
+      "label": "Cúi",
+      "gesture_event": "swipe_down",
+      "gesture": "Swipe Down",
+      "action": "game.crouch",
+      "enabled": true,
+      "payload": {
+        "key": "s"
+      }
+    },
+    {
+      "id": "attack",
+      "label": "Tấn công",
+      "gesture_event": "rapid_punch",
+      "gesture": "Rapid Punch",
+      "action": "game.attack",
+      "enabled": true,
+      "payload": {
+        "key": "j"
+      }
+    },
+    {
+      "id": "block",
+      "label": "Đỡ đòn",
+      "gesture_event": "closed_fist_hold",
+      "gesture": "Closed Fist Hold",
+      "action": "game.block",
+      "enabled": true,
+      "payload": {
+        "key": "k"
+      }
+    },
+    {
+      "id": "dash",
+      "label": "Dash",
+      "gesture_event": "swipe_double",
+      "gesture": "Double Swipe",
+      "action": "game.dash",
+      "enabled": true,
+      "payload": {
+        "key": "shift"
+      }
+    },
+    {
+      "id": "skill_1",
+      "label": "Skill 1",
+      "gesture_event": "pinch_hold",
+      "gesture": "Pinch Hold",
+      "action": "game.skill_1",
+      "enabled": true,
+      "payload": {
+        "key": "u"
+      }
+    },
+    {
+      "id": "move_up",
+      "label": "Di chuyển lên",
+      "gesture_event": "tilt_up",
+      "gesture": "Tilt Up",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "w"
+      }
+    },
+    {
+      "id": "move_down",
+      "label": "Di chuyển xuống",
+      "gesture_event": "tilt_down",
+      "gesture": "Tilt Down",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "s"
+      }
+    },
+    {
+      "id": "heavy_attack",
+      "label": "Tấn công mạnh",
+      "gesture_event": "closed_fist_punch",
+      "gesture": "Closed Fist Punch",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "l"
+      }
+    },
+    {
+      "id": "interact",
+      "label": "Tương tác",
+      "gesture_event": "pinch_tap_interact",
+      "gesture": "Pinch Tap",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "e"
+      }
+    },
+    {
+      "id": "skill_2",
+      "label": "Skill 2",
+      "gesture_event": "pinch_hold_skill_2",
+      "gesture": "Pinch Hold Two Fingers",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "i"
+      }
+    },
+    {
+      "id": "pause",
+      "label": "Pause game",
+      "gesture_event": "open_close_palm_pause",
+      "gesture": "Open Close Palm",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "escape"
+      }
+    },
+    {
+      "id": "inventory",
+      "label": "Inventory",
+      "gesture_event": "three_finger_pose_inventory",
+      "gesture": "Three Finger Pose",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "tab"
+      }
+    },
+    {
+      "id": "map",
+      "label": "Map",
+      "gesture_event": "four_finger_pose_map",
+      "gesture": "Four Finger Pose",
+      "action": "keyboard.press",
+      "enabled": true,
+      "payload": {
+        "key": "m"
+      }
+    }
+  ]
+}

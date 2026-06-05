@@ -533,3 +533,34 @@ Sau khi sửa, cập nhật checklist trong update.md, chạy test phù hợp, b
 
 Phase hiện tại: <điền phase>.
 ```
+
+---
+
+## 16. Quy trình môi trường mỗi phiên
+
+Khi người dùng yêu cầu cài môi trường, khởi động app, test thử hoặc chuẩn bị phiên làm việc mới, agent phải:
+
+```text
+[ ] Đọc AGENTS.md, update.md, ripgrep.md, ACV_GESTURE_SPEC.md theo đúng thứ tự bắt buộc.
+[ ] Dùng rg để tìm README.md, requirements.txt, frontend/package.json và các script chạy app.
+[ ] Kiểm tra runtime Windows: node/npm và Python Launcher `py -3`.
+[ ] Cài Python packages bằng: py -3 -m pip install -r DIEU_KHIEN_CHUOT\requirements.txt
+[ ] Cài frontend packages bằng: cd frontend && npm install
+[ ] Test frontend bằng: cd frontend && npm run build
+[ ] Test Python bằng: py -3 -m compileall DIEU_KHIEN_CHUOT actions core
+[ ] Nếu cần khởi động UI web: cd frontend && npm run dev -- --host 127.0.0.1 --port 5173
+[ ] Kiểm tra UI trả HTTP 200 tại http://127.0.0.1:5173/
+[ ] Không chạy demo_run.py nếu chưa báo rõ vì lệnh này mở camera và điều khiển chuột thật.
+[ ] Nếu cần chạy demo cũ: py -3 DIEU_KHIEN_CHUOT\demo_run.py
+[ ] Ghi/cập nhật lệnh khởi động trong README.md.
+[ ] Ghi/cập nhật danh sách thư viện cần cài trong thu_vien_can_cai.txt và DIEU_KHIEN_CHUOT\requirements.txt nếu có thay đổi Python package.
+```
+
+Ghi chú môi trường Windows/WSL:
+
+```text
+Project nằm ở D:\github\link\DieuKhienBangTay nên ưu tiên lệnh PowerShell/Windows.
+Nếu Codex chạy trong WSL mà `node` hoặc `python` không có trong PATH, kiểm tra:
+- /mnt/c/Program Files/nodejs/node.exe
+- /mnt/c/Windows/py.exe -3
+```

@@ -25,7 +25,7 @@ def main():
             "pip install -r DIEU_KHIEN_CHUOT\\requirements.txt"
         ) from exc
 
-    webview.create_window(
+    window = webview.create_window(
         APP_TITLE,
         index_path.as_uri(),
         width=1440,
@@ -33,6 +33,13 @@ def main():
         min_size=(1180, 760),
         background_color="#0A0A0C",
     )
+    try:
+        from backend.services.app_visibility_service import app_visibility_service
+        from desktop.window_controller import PyWebviewWindowController
+
+        app_visibility_service.register_controller(PyWebviewWindowController(window))
+    except Exception:
+        pass
     webview.start(debug=False)
 
 

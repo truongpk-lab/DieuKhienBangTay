@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from DIEU_KHIEN_CHUOT.hand_feature_utils import extract_landmark_features
+from backend.hand_runtime.feature_utils import extract_landmark_features
 
 
 PROCESS_SIZE = 224
