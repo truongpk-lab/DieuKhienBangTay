@@ -140,8 +140,13 @@ export default function OnboardingView({ profiles, onComplete }: OnboardingViewP
 
       if (cameraResult.status === 'fulfilled') {
         setCameras(cameraResult.value)
-        if (cameraResult.value[0] && !cameraResult.value.some((camera) => camera.id === settings.camera_id)) {
-          setSettings((current) => ({ ...current, camera_id: cameraResult.value[0].id }))
+        if (cameraResult.value[0]) {
+          setSettings((current) => {
+            if (cameraResult.value.some((camera) => camera.id === current.camera_id)) {
+              return current
+            }
+            return { ...current, camera_id: cameraResult.value[0].id }
+          })
         }
       } else {
         nextErrors.cameras = errorMessage(cameraResult.reason)
@@ -164,26 +169,26 @@ export default function OnboardingView({ profiles, onComplete }: OnboardingViewP
       setLoading(false)
     }
 
-    loadOnboardingState()
-    startBrowserPreview()
+    void loadOnboardingState()
+    const previewTimer = window.setTimeout(() => {
+      void startBrowserPreview()
+    }, 0)
     return () => {
       canceled = true
+      window.clearTimeout(previewTimer)
       stopPreview()
     }
   }, [startBrowserPreview, stopPreview])
-
-  useEffect(() => {
-    if (runtimeCameras.length > 0 && !runtimeCameras.some((camera) => camera.id === settings.camera_id)) {
-      setSettings((current) => ({ ...current, camera_id: runtimeCameras[0].id }))
-    }
-  }, [runtimeCameras, settings.camera_id])
 
   const activeProfile = useMemo(
     () => profiles.find((profile) => profile.id === settings.active_profile_id) ?? profiles[0],
     [profiles, settings.active_profile_id],
   )
 
-  const selectedCamera = runtimeCameras.find((camera) => camera.id === settings.camera_id)
+  const selectedCameraId = runtimeCameras.some((camera) => camera.id === settings.camera_id)
+    ? settings.camera_id
+    : (runtimeCameras[0]?.id ?? settings.camera_id)
+  const selectedCamera = runtimeCameras.find((camera) => camera.id === selectedCameraId)
   const selectedMicrophone = microphones.find((microphone) => microphone.id === settings.microphone_id)
   const noRuntimeCameraAvailable = !loading && runtimeCameras.length === 0
   const previewReady = previewStatus === 'ready'
@@ -194,7 +199,7 @@ export default function OnboardingView({ profiles, onComplete }: OnboardingViewP
   }
 
   async function handleProfileSelect(profileId: string) {
-    const nextSettings = { ...settings, active_profile_id: profileId }
+    const nextSettings = { ...settings, active_profile_id: profileId, camera_id: selectedCameraId }
     setSettings(nextSettings)
     setSavingProfile(true)
     setError(null)
@@ -224,14 +229,16 @@ export default function OnboardingView({ profiles, onComplete }: OnboardingViewP
     setSubmitting(action)
     setError(null)
 
+    const settingsToSave = { ...settings, camera_id: selectedCameraId }
+
     try {
-      await saveSettings(settings)
-      await activateProfile(settings.active_profile_id)
+      await saveSettings(settingsToSave)
+      await activateProfile(settingsToSave.active_profile_id)
       if (action === 'start') {
-        await startCalibration(settings)
+        await startCalibration(settingsToSave)
         setNotice('Đã bắt đầu hiệu chỉnh. Chuyển sang Dashboard.')
       } else {
-        await skipCalibration(settings)
+        await skipCalibration(settingsToSave)
         setNotice('Đã lưu cấu hình mặc định. Chuyển sang Dashboard.')
       }
       onComplete()
@@ -302,7 +309,7 @@ export default function OnboardingView({ profiles, onComplete }: OnboardingViewP
           <select
             className="w-full rounded-xl border border-white/10 bg-[#1c1b1d] px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-60"
             disabled={loading || noRuntimeCameraAvailable}
-            value={settings.camera_id}
+            value={selectedCameraId}
             onChange={(event) => updateSettings({ camera_id: event.target.value })}
           >
             {runtimeCameras.map((camera) => (
