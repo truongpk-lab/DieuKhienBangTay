@@ -16,7 +16,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { sendVoiceCommand } from '../api/aiApi'
 import { emergencyStopApp, minimizeAppWithFallback, showAppWithFallback } from '../api/appControlApi'
 import { activateProfile } from '../api/profileApi'
@@ -45,7 +45,6 @@ export default function DashboardView({
   onLogsChange,
   onOpenSettings,
 }: DashboardViewProps) {
-  const [visibleLogs, setVisibleLogs] = useState(logs)
   const [activeAction, setActiveAction] = useState<DashboardAction>(null)
   const [appHidden, setAppHidden] = useState(false)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
@@ -56,12 +55,9 @@ export default function DashboardView({
   const runtimePaused = runtime.mode === 'paused'
   const micActive = runtime.micStatus === 'Microphone active'
 
-  useEffect(() => {
-    setVisibleLogs(logs)
-  }, [logs])
+  const visibleLogs = logs
 
   function syncLogs(nextLogs: GestureLog[]) {
-    setVisibleLogs(nextLogs)
     onLogsChange(nextLogs)
   }
 

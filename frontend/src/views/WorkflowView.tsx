@@ -123,7 +123,7 @@ export default function WorkflowView({
 }) {
   const [activeModeId, setActiveModeId] = useState<ConfigProfileId>('office')
   const [activeProfile, setActiveProfile] = useState<ProfileDetail>(getLocalProfileDetail('office'))
-  const [profileStatus, setProfileStatus] = useState('Catalog local')
+  const [profileStatus, setProfileStatus] = useState('Đang tải hướng dẫn...')
   const activeModeMeta = guideModeMeta[activeModeId]
   const ActiveIcon = activeModeMeta.icon
 
@@ -139,9 +139,6 @@ export default function WorkflowView({
   useEffect(() => {
     let canceled = false
     const local = getLocalProfileDetail(activeModeId)
-
-    setActiveProfile(local)
-    setProfileStatus('Đang tải hướng dẫn...')
 
     getProfile(activeModeId)
       .then((data) => {
@@ -160,6 +157,13 @@ export default function WorkflowView({
       canceled = true
     }
   }, [activeModeId])
+
+  function changeGuideMode(modeId: ConfigProfileId) {
+    const local = getLocalProfileDetail(modeId)
+    setActiveProfile(local)
+    setProfileStatus('Đang tải hướng dẫn...')
+    setActiveModeId(modeId)
+  }
 
   const guideFunctions = useMemo(
     () => (activeProfile.functions ?? []).filter((mapping) => mapping.enabled !== false).map(mappingToGuideFunction),
@@ -196,7 +200,7 @@ export default function WorkflowView({
                 <button
                   key={mode.id}
                   type="button"
-                  onClick={() => setActiveModeId(mode.id as ConfigProfileId)}
+                  onClick={() => changeGuideMode(mode.id as ConfigProfileId)}
                   className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition ${
                     active
                       ? 'border-brand-cyan/40 bg-brand-cyan/15 text-cyan-100 glow-btn-active'
