@@ -19,13 +19,13 @@ export default function HandCameraHUD({ compact = false, showWarnings = false, l
       </div>
       <div className="absolute right-4 top-4 flex flex-wrap justify-end gap-2 text-xs font-semibold">
         <span className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-cyan-100">
-          Hand detected
+          Đã nhận diện tay
         </span>
         <span className="rounded-full border border-blue-300/25 bg-blue-300/10 px-3 py-1 text-blue-100">
-          Pinch
+          Kẹp ngón
         </span>
         <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-emerald-100">
-          Dragging
+          Đang kéo
         </span>
       </div>
       <motion.div
@@ -43,10 +43,10 @@ export default function HandCameraHUD({ compact = false, showWarnings = false, l
       {showWarnings && (
         <div className="absolute bottom-4 right-4 max-w-[220px] space-y-2 text-xs">
           <div className="rounded-xl border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-amber-100">
-            Low light warning
+            Cảnh báo thiếu sáng
           </div>
           <div className="rounded-xl border border-red-300/25 bg-red-400/10 px-3 py-2 text-red-100">
-            Camera unavailable
+            Không truy cập được camera
           </div>
         </div>
       )}

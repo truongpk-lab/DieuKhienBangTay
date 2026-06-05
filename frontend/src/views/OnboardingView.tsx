@@ -236,14 +236,14 @@ export default function OnboardingView({ profiles, onComplete }: OnboardingViewP
       await activateProfile(settingsToSave.active_profile_id)
       if (action === 'start') {
         await startCalibration(settingsToSave)
-        setNotice('Đã bắt đầu hiệu chỉnh. Chuyển sang Dashboard.')
+        setNotice('Đã bắt đầu hiệu chỉnh. Chuyển sang Bảng điều khiển.')
       } else {
         await skipCalibration(settingsToSave)
-        setNotice('Đã lưu cấu hình mặc định. Chuyển sang Dashboard.')
+        setNotice('Đã lưu cấu hình mặc định. Chuyển sang Bảng điều khiển.')
       }
       onComplete()
     } catch (err) {
-      setError(`${errorMessage(err)} Không chuyển Dashboard vì cấu hình chưa được lưu thật.`)
+      setError(`${errorMessage(err)} Không chuyển Bảng điều khiển vì cấu hình chưa được lưu thật.`)
     } finally {
       setSubmitting(null)
     }

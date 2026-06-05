@@ -8,7 +8,7 @@ type TerminalLogProps = {
   clearLabel?: string
 }
 
-export default function TerminalLog({ logs, onClear, clearDisabled = false, clearLabel = 'Clear' }: TerminalLogProps) {
+export default function TerminalLog({ logs, onClear, clearDisabled = false, clearLabel = 'Xóa' }: TerminalLogProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const shouldStickToBottomRef = useRef(true)
   const [isInspecting, setIsInspecting] = useState(false)
@@ -46,7 +46,7 @@ export default function TerminalLog({ logs, onClear, clearDisabled = false, clea
   return (
     <div className="glass-panel flex h-full min-h-[150px] flex-col rounded-2xl">
       <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-300">Gesture log</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-300">Nhật ký cử chỉ</h2>
         <button
           onClick={onClear}
           disabled={clearDisabled}

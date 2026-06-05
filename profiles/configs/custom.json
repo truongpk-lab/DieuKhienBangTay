@@ -17,7 +17,7 @@
       "id": "move",
       "label": "Di chuyển chuột",
       "gesture_event": "open_palm_move",
-      "gesture": "Open Palm Move",
+      "gesture": "Mở bàn tay để rê",
       "action": "mouse.move",
       "enabled": true,
       "payload": {}
@@ -26,7 +26,7 @@
       "id": "left_click",
       "label": "Click trái",
       "gesture_event": "pinch_index",
-      "gesture": "Pinch Index",
+      "gesture": "Kẹp ngón trỏ",
       "action": "mouse.left_click",
       "enabled": true,
       "payload": {}
@@ -35,7 +35,7 @@
       "id": "drag_drop",
       "label": "Kéo thả file/thư mục",
       "gesture_event": "closed_fist_hold",
-      "gesture": "Closed Fist Hold",
+      "gesture": "Nắm tay giữ",
       "action": "mouse.drag",
       "enabled": true,
       "payload": {
@@ -44,9 +44,9 @@
     },
     {
       "id": "play_pause",
-      "label": "Play/Pause",
+      "label": "Phát / Tạm dừng",
       "gesture_event": "open_close_palm",
-      "gesture": "Open Close Palm",
+      "gesture": "Mở/đóng bàn tay",
       "action": "media.play_pause",
       "enabled": true,
       "payload": {}
@@ -55,7 +55,7 @@
       "id": "game_attack",
       "label": "Tấn công trong game",
       "gesture_event": "rapid_punch",
-      "gesture": "Rapid Punch",
+      "gesture": "Đấm nhanh",
       "action": "game.attack",
       "enabled": true,
       "payload": {

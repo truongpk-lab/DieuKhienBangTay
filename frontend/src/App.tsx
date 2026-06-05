@@ -13,7 +13,7 @@ import WorkflowView from './views/WorkflowView'
 
 const viewTitles: Record<AppView, string> = {
   onboarding: 'Thiết lập ban đầu',
-  dashboard: 'Dashboard trung tâm',
+  dashboard: 'Bảng điều khiển trung tâm',
   config: 'Thiết lập cấu hình',
   training: 'Huấn luyện cử chỉ',
   workflow: 'Hướng dẫn thao tác',
@@ -48,8 +48,8 @@ function App() {
           setBackendOnline(false)
           setRuntime((current) => ({
             ...current,
-            lastError: error instanceof Error ? error.message : 'Backend offline',
-            trackingStatus: 'Backend offline',
+            lastError: error instanceof Error ? error.message : 'Backend chưa kết nối',
+            trackingStatus: 'Backend chưa kết nối',
           }))
         }
       }
@@ -114,7 +114,7 @@ function App() {
           <TopAppBar title={title} runtime={runtime} backendOnline={backendOnline} />
           {(!backendOnline || runtime.lastError) && (
             <div className="mx-4 mt-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100 sm:mx-5">
-              {runtime.lastError || 'Backend offline; chức năng thật đang bị tạm khóa cho đến khi API chạy lại.'}
+              {runtime.lastError || 'Backend chưa kết nối; chức năng thật đang bị tạm khóa cho đến khi API chạy lại.'}
             </div>
           )}
           <section className="min-h-0 flex-1 overflow-y-auto px-4 pb-24 sm:px-5 lg:pb-5">

@@ -81,22 +81,22 @@ const guideModeMeta: Record<ConfigProfileId, GuideModeMeta> = {
     highlight: 'Tối ưu cho cá nhân hóa',
     difficulty: 'Nâng cao',
     latency: 'Tùy cấu hình',
-    practice: ['Đặt tên gesture rõ ràng trong cấu hình.', 'Train tối thiểu 30-50 mẫu cho mỗi tác vụ.', 'Kiểm thử bằng ứng dụng ít rủi ro trước.'],
+    practice: ['Đặt tên cử chỉ rõ ràng trong cấu hình.', 'Huấn luyện tối thiểu 30-50 mẫu cho mỗi tác vụ.', 'Kiểm thử bằng ứng dụng ít rủi ro trước.'],
   },
 }
 
 const categoryIcons: Record<string, LucideIcon> = {
-  Pointer: MousePointer2,
-  Navigation: ScrollText,
-  Tabs: PanelTop,
-  Clipboard: Copy,
-  System: Keyboard,
-  Playback: Music2,
-  Timeline: ScrollText,
-  Audio: Music2,
-  View: Maximize2,
-  Movement: Gamepad2,
-  Combat: Zap,
+  'Con trỏ': MousePointer2,
+  'Điều hướng': ScrollText,
+  Tab: PanelTop,
+  'Bộ nhớ tạm': Copy,
+  'Hệ thống': Keyboard,
+  'Phát media': Music2,
+  'Dòng thời gian': ScrollText,
+  'Âm thanh': Music2,
+  'Hiển thị': Maximize2,
+  'Di chuyển': Gamepad2,
+  'Chiến đấu': Zap,
 }
 
 const quickChecklist = [
@@ -145,12 +145,12 @@ export default function WorkflowView({
         if (canceled) return
         const mergedFunctions = mergeCatalogFunctions(activeModeId, data.functions)
         setActiveProfile({ ...data, functions: mergedFunctions })
-        setProfileStatus((data.functions?.length ?? 0) < mergedFunctions.length ? 'Saved + catalog bổ sung' : 'Saved')
+        setProfileStatus((data.functions?.length ?? 0) < mergedFunctions.length ? 'Đã lưu + bổ sung catalog' : 'Đã lưu')
       })
       .catch(() => {
         if (canceled) return
         setActiveProfile(local)
-        setProfileStatus('Backend offline; dùng catalog local.')
+        setProfileStatus('Backend chưa kết nối; dùng catalog cục bộ.')
       })
 
     return () => {
@@ -174,7 +174,7 @@ export default function WorkflowView({
     [logs],
   )
   const primaryFunction = guideFunctions[0]
-  const activeGesture = primaryFunction?.gesture ?? runtime?.currentGesture ?? 'Custom Gesture'
+  const activeGesture = primaryFunction?.gesture ?? runtime?.currentGesture ?? 'Cử chỉ tùy chỉnh'
   const actionPreview = primaryFunction?.title ?? runtime?.currentAction ?? 'Tác vụ đang cấu hình'
 
   return (
@@ -234,8 +234,8 @@ export default function WorkflowView({
 
             <div className="flex flex-wrap gap-2">
               <Badge label={`Độ khó: ${activeModeMeta.difficulty}`} />
-              <Badge label={`Latency: ${runtime?.latency ?? activeModeMeta.latency}${typeof runtime?.latency === 'number' ? 'ms' : ''}`} />
-              <Badge label={runtime?.trackingStatus ?? 'Sensor: Sẵn sàng'} />
+              <Badge label={`Độ trễ: ${runtime?.latency ?? activeModeMeta.latency}${typeof runtime?.latency === 'number' ? 'ms' : ''}`} />
+              <Badge label={runtime?.trackingStatus ?? 'Cảm biến: Sẵn sàng'} />
               <Badge label={profileStatus} />
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function WorkflowView({
                 <div className="text-xs uppercase tracking-[0.24em] text-brand-cyan">Mô phỏng bàn tay</div>
                 <h3 className="mt-2 text-xl font-semibold text-white">{actionPreview}</h3>
               </div>
-              <div className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-sm text-emerald-100">Sensor: Active</div>
+              <div className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-sm text-emerald-100">Cảm biến: Đang hoạt động</div>
             </div>
 
             <div className="relative mx-auto mt-8 aspect-square max-w-[360px]">
@@ -365,9 +365,9 @@ function resolveGuideIcon(mapping: FunctionMapping): LucideIcon {
 }
 
 function toneFromMapping(mapping: FunctionMapping): GuideFunction['tone'] {
-  if (mapping.category === 'Combat' || mapping.action.includes('attack')) return 'red'
-  if (mapping.category === 'System' || mapping.action.includes('hotkey')) return 'amber'
-  if (mapping.action.startsWith('media.') || mapping.action.startsWith('game.') || mapping.category === 'Tabs') return 'blue'
+  if (mapping.category === 'Chiến đấu' || mapping.action.includes('attack')) return 'red'
+  if (mapping.category === 'Hệ thống' || mapping.action.includes('hotkey')) return 'amber'
+  if (mapping.action.startsWith('media.') || mapping.action.startsWith('game.') || mapping.category === 'Tab') return 'blue'
   return 'cyan'
 }
 

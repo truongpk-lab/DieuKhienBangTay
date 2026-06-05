@@ -1,7 +1,7 @@
 {
   "id": "office",
   "name": "Văn phòng",
-  "description": "Điều hướng desktop, tài liệu và kéo thả hằng ngày.",
+  "description": "Điều hướng màn hình, tài liệu và kéo thả hằng ngày.",
   "mouse": {
     "speed": 1.5,
     "sensitivity": 75,
@@ -17,7 +17,7 @@
       "id": "move",
       "label": "Di chuyển chuột",
       "gesture_event": "open_palm_move",
-      "gesture": "Open Palm Move",
+      "gesture": "Mở bàn tay để rê",
       "action": "mouse.move",
       "enabled": true,
       "payload": {}
@@ -26,7 +26,7 @@
       "id": "left_click",
       "label": "Click trái",
       "gesture_event": "pinch_index",
-      "gesture": "Pinch Index",
+      "gesture": "Kẹp ngón trỏ",
       "action": "mouse.left_click",
       "enabled": true,
       "payload": {}
@@ -35,7 +35,7 @@
       "id": "right_click",
       "label": "Click phải",
       "gesture_event": "pinch_middle",
-      "gesture": "Pinch Middle",
+      "gesture": "Kẹp ngón giữa",
       "action": "mouse.right_click",
       "enabled": true,
       "payload": {}
@@ -44,7 +44,7 @@
       "id": "drag_drop",
       "label": "Kéo thả file/thư mục",
       "gesture_event": "closed_fist_hold",
-      "gesture": "Closed Fist Hold",
+      "gesture": "Nắm tay giữ",
       "action": "mouse.drag",
       "enabled": true,
       "payload": {
@@ -55,7 +55,7 @@
       "id": "scroll",
       "label": "Cuộn trang",
       "gesture_event": "two_finger_swipe",
-      "gesture": "Two Finger Swipe",
+      "gesture": "Vuốt hai ngón",
       "action": "mouse.scroll",
       "enabled": true,
       "payload": {}
@@ -64,7 +64,7 @@
       "id": "phase12_pinch_tap",
       "label": "Click trái",
       "gesture_event": "pinch_tap",
-      "gesture": "Pinch Tap",
+      "gesture": "Kẹp chạm nhanh",
       "action": "mouse.left_click",
       "enabled": true,
       "payload": {}
@@ -73,7 +73,7 @@
       "id": "phase12_two_finger_tap",
       "label": "Click phải",
       "gesture_event": "two_finger_tap",
-      "gesture": "Two Finger Tap",
+      "gesture": "Chạm hai ngón",
       "action": "mouse.right_click",
       "enabled": true,
       "payload": {}
@@ -82,7 +82,7 @@
       "id": "phase12_three_up",
       "label": "Cuộn lên",
       "gesture_event": "three_up",
-      "gesture": "Three Fingers Up",
+      "gesture": "Vuốt ba ngón lên",
       "action": "mouse.scroll",
       "enabled": true,
       "payload": {
@@ -93,7 +93,7 @@
       "id": "phase12_three_down",
       "label": "Cuộn xuống",
       "gesture_event": "three_down",
-      "gesture": "Three Fingers Down",
+      "gesture": "Vuốt ba ngón xuống",
       "action": "mouse.scroll",
       "enabled": true,
       "payload": {
@@ -104,7 +104,7 @@
       "id": "phase12_pinch_hold",
       "label": "Giữ chuột",
       "gesture_event": "pinch_hold",
-      "gesture": "Pinch Hold",
+      "gesture": "Kẹp giữ",
       "action": "mouse.down",
       "enabled": true,
       "payload": {}
@@ -113,7 +113,7 @@
       "id": "phase12_drag_move",
       "label": "Di chuyển khi kéo",
       "gesture_event": "drag_move",
-      "gesture": "Drag Move",
+      "gesture": "Di chuyển khi kéo",
       "action": "mouse.move",
       "enabled": true,
       "payload": {}
@@ -122,7 +122,7 @@
       "id": "phase12_drag_release",
       "label": "Thả chuột",
       "gesture_event": "drag_release",
-      "gesture": "Drag Release",
+      "gesture": "Thả sau khi kéo",
       "action": "mouse.up",
       "enabled": true,
       "payload": {}
@@ -131,7 +131,7 @@
       "id": "switch_tab",
       "label": "Chuyển tab",
       "gesture_event": "three_finger_left_right",
-      "gesture": "Three Finger Left/Right",
+      "gesture": "Vuốt ba ngón trái/phải",
       "action": "keyboard.switch_tab",
       "enabled": true,
       "payload": {
@@ -142,7 +142,7 @@
       "id": "swipe_right_tab",
       "label": "Chuyển tab phải",
       "gesture_event": "swipe_right",
-      "gesture": "Swipe Right",
+      "gesture": "Vuốt phải",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {
@@ -151,9 +151,9 @@
     },
     {
       "id": "copy",
-      "label": "Copy",
+      "label": "Sao chép",
       "gesture_event": "pinch_hold_left",
-      "gesture": "Pinch Hold Left",
+      "gesture": "Kẹp giữ sang trái",
       "action": "keyboard.copy",
       "enabled": true,
       "payload": {
@@ -162,9 +162,9 @@
     },
     {
       "id": "paste",
-      "label": "Paste",
+      "label": "Dán",
       "gesture_event": "pinch_hold_right",
-      "gesture": "Pinch Hold Right",
+      "gesture": "Kẹp giữ sang phải",
       "action": "keyboard.paste",
       "enabled": true,
       "payload": {

@@ -43,7 +43,7 @@ export default function TrainingView({ profiles = [] }: { profiles?: Profile[] }
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    getTrainingStatus().then(setStatus).catch(() => setNotice('Backend offline; Training API chưa sẵn sàng.'))
+    getTrainingStatus().then(setStatus).catch(() => setNotice('Backend chưa kết nối; API huấn luyện chưa sẵn sàng.'))
   }, [])
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function TrainingView({ profiles = [] }: { profiles?: Profile[] }
       setNotice(next.lastError || message)
       if (next.preview) setPreview(next.preview)
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : 'Training request failed.')
+      setNotice(error instanceof Error ? error.message : 'Yêu cầu huấn luyện thất bại.')
     } finally {
       setBusy(false)
     }
@@ -76,9 +76,9 @@ export default function TrainingView({ profiles = [] }: { profiles?: Profile[] }
     try {
       const items = await getTrainingSamplePreview()
       setPreview(items)
-      setNotice(`Đã tải ${items.length} mẫu preview.`)
+      setNotice(`Đã tải ${items.length} mẫu xem trước.`)
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : 'Không tải được preview.')
+      setNotice(error instanceof Error ? error.message : 'Không tải được mẫu xem trước.')
     }
   }
 
@@ -92,7 +92,7 @@ export default function TrainingView({ profiles = [] }: { profiles?: Profile[] }
             ))}
           </select>
           <select value={functionId} onChange={(event) => setFunctionId(event.target.value)} className="w-full rounded-xl border border-white/10 bg-[#1c1b1d] px-4 py-3 text-white">
-            {(functions.length ? functions : [{ id: 'drag_drop', label: 'Kéo thả', gesture: 'Pinch Drag', action: 'mouse.drag' }]).map((item) => (
+            {(functions.length ? functions : [{ id: 'drag_drop', label: 'Kéo thả', gesture: 'Kẹp kéo-thả', action: 'mouse.drag' }]).map((item) => (
               <option key={item.id} value={item.id}>{item.label}</option>
             ))}
           </select>
@@ -113,7 +113,7 @@ export default function TrainingView({ profiles = [] }: { profiles?: Profile[] }
           {status.lastError && <div className="rounded-2xl border border-red-300/20 bg-red-400/10 p-4 text-sm text-red-100">{status.lastError}</div>}
           <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm text-cyan-100">{notice}</div>
           <div className="max-h-40 overflow-auto rounded-2xl border border-white/10 bg-black/20 p-3 font-mono text-xs text-slate-300">
-            {preview.length ? preview.map((sample) => <div key={sample.sampleId}>{sample.sampleId}</div>) : 'Chưa có sample preview.'}
+            {preview.length ? preview.map((sample) => <div key={sample.sampleId}>{sample.sampleId}</div>) : 'Chưa có mẫu xem trước.'}
           </div>
         </div>
       </div>
@@ -123,25 +123,25 @@ export default function TrainingView({ profiles = [] }: { profiles?: Profile[] }
         </div>
         <HandCameraHUD compact showWarnings />
         <div className="mt-5 flex flex-wrap gap-3">
-          <button disabled={busy} onClick={() => run(() => startTrainingSession({ profile_id: profileId, function_id: functionId, mode, target_samples: targetSamples }), 'Training session đã bắt đầu.')} className="inline-flex items-center gap-2 rounded-xl border border-red-300/30 bg-red-400/10 px-4 py-3 text-red-100 disabled:opacity-50" type="button">
+          <button disabled={busy} onClick={() => run(() => startTrainingSession({ profile_id: profileId, function_id: functionId, mode, target_samples: targetSamples }), 'Phiên huấn luyện đã bắt đầu.')} className="inline-flex items-center gap-2 rounded-xl border border-red-300/30 bg-red-400/10 px-4 py-3 text-red-100 disabled:opacity-50" type="button">
             <Circle className="h-4 w-4 fill-current" />
             Ghi hình
           </button>
-          <button disabled={busy} onClick={() => run(stopTrainingSession, 'Training session đã dừng.')} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-slate-200 disabled:opacity-50" type="button">
+          <button disabled={busy} onClick={() => run(stopTrainingSession, 'Phiên huấn luyện đã dừng.')} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-slate-200 disabled:opacity-50" type="button">
             <Square className="h-4 w-4" />
             Dừng
           </button>
-          <button disabled={busy || !status.active} onClick={() => run(() => captureTrainingSample({ session_id: status.sessionId ?? undefined }), 'Đã chụp sample.')} className="rounded-xl border border-white/10 px-4 py-3 text-slate-200 disabled:opacity-50" type="button">Chụp sample</button>
+          <button disabled={busy || !status.active} onClick={() => run(() => captureTrainingSample({ session_id: status.sessionId ?? undefined }), 'Đã chụp mẫu.')} className="rounded-xl border border-white/10 px-4 py-3 text-slate-200 disabled:opacity-50" type="button">Chụp mẫu</button>
           <button onClick={refreshPreview} className="rounded-xl border border-white/10 px-4 py-3 text-slate-200" type="button">Xem trước mẫu</button>
-          <button disabled={busy} onClick={() => run(trainGestureModel, 'Huấn luyện hoàn tất và model đã vào registry.')} className="inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-3 font-semibold text-black disabled:opacity-50 sm:ml-auto" type="button">
+          <button disabled={busy} onClick={() => run(trainGestureModel, 'Huấn luyện hoàn tất và model đã được ghi vào registry.')} className="inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-3 font-semibold text-black disabled:opacity-50 sm:ml-auto" type="button">
             <Play className="h-4 w-4" />
             Huấn luyện
           </button>
-          <button disabled={busy} onClick={() => run(saveTrainingModel, 'Đã lưu session/model.')} className="inline-flex items-center gap-2 rounded-xl border border-cyan-300/30 px-4 py-3 text-cyan-100 disabled:opacity-50" type="button">
+          <button disabled={busy} onClick={() => run(saveTrainingModel, 'Đã lưu phiên/model.')} className="inline-flex items-center gap-2 rounded-xl border border-cyan-300/30 px-4 py-3 text-cyan-100 disabled:opacity-50" type="button">
             <Save className="h-4 w-4" />
             Lưu
           </button>
-          <button disabled={busy} onClick={() => window.confirm('Hủy training session hiện tại?') && run(cancelTrainingSession, 'Đã hủy training session.')} className="rounded-xl border border-white/10 px-4 py-3 text-slate-300 disabled:opacity-50" type="button">Hủy</button>
+          <button disabled={busy} onClick={() => window.confirm('Hủy phiên huấn luyện hiện tại?') && run(cancelTrainingSession, 'Đã hủy phiên huấn luyện.')} className="rounded-xl border border-white/10 px-4 py-3 text-slate-300 disabled:opacity-50" type="button">Hủy</button>
         </div>
       </div>
     </div>

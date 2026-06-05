@@ -31,17 +31,17 @@ import {
 import type { FunctionMapping, GestureSuggestion, Profile } from '../types'
 
 const categoryIcons = {
-  Pointer: MousePointerClick,
-  Navigation: ScrollText,
-  Tabs: PanelTop,
-  Clipboard: Copy,
-  System: Keyboard,
-  Playback: Music2,
-  Timeline: ScrollText,
-  Audio: Music2,
-  View: Maximize2,
-  Movement: Gamepad2,
-  Combat: Zap,
+  'Con trỏ': MousePointerClick,
+  'Điều hướng': ScrollText,
+  Tab: PanelTop,
+  'Bộ nhớ tạm': Copy,
+  'Hệ thống': Keyboard,
+  'Phát media': Music2,
+  'Dòng thời gian': ScrollText,
+  'Âm thanh': Music2,
+  'Hiển thị': Maximize2,
+  'Di chuyển': Gamepad2,
+  'Chiến đấu': Zap,
 } satisfies Record<string, typeof Mouse>
 
 export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) {
@@ -71,13 +71,13 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
         const mergedFunctions = mergeCatalogFunctions(profileId, data.functions)
         setProfile({ ...data, functions: mergedFunctions })
         setDraft(mergedFunctions)
-        setStatus((data.functions?.length ?? 0) < mergedFunctions.length ? 'Saved + catalog bổ sung' : 'Saved')
+        setStatus((data.functions?.length ?? 0) < mergedFunctions.length ? 'Đã lưu + bổ sung catalog' : 'Đã lưu')
       })
       .catch(() => {
         if (canceled) return
         setProfile(local)
         setDraft(local.functions ?? [])
-        setStatus('Backend offline; dùng catalog local.')
+        setStatus('Backend chưa kết nối; dùng catalog cục bộ.')
       })
       .finally(() => !canceled && setBusy(false))
 
@@ -96,9 +96,9 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
     const next: FunctionMapping = {
       id: `custom_${Date.now()}`,
       label: 'Tác vụ mới',
-      description: 'Tác vụ tùy chỉnh cho profile hiện tại.',
-      category: 'System',
-      gesture: 'Custom Gesture',
+      description: 'Tác vụ tùy chỉnh cho hồ sơ hiện tại.',
+      category: 'Hệ thống',
+      gesture: 'Cử chỉ tùy chỉnh',
       gesture_event: 'custom_gesture',
       action: 'keyboard.press',
       enabled: true,
@@ -106,9 +106,9 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
       gesture_options: [
         {
           id: 'custom_gesture',
-          label: 'Custom Gesture',
+          label: 'Cử chỉ tùy chỉnh',
           gesture_event: 'custom_gesture',
-          gesture: 'Custom Gesture',
+          gesture: 'Cử chỉ tùy chỉnh',
           description: 'Cử chỉ cá nhân sẽ được huấn luyện sau.',
           fit: 'Dùng cho nhu cầu riêng khi catalog chưa đủ.',
         },
@@ -125,13 +125,13 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
     })
     setEditing(null)
     setSelectedMappingId(next.id)
-    setStatus('Unsaved')
+    setStatus('Chưa lưu')
   }
 
   function removeMapping(id: string) {
     setDraft((items) => items.filter((item) => item.id !== id))
     setSelectedMappingId((current) => (current === id ? null : current))
-    setStatus('Unsaved')
+    setStatus('Chưa lưu')
   }
 
   function applyGesture(mappingId: string, suggestion: GestureSuggestion) {
@@ -142,7 +142,7 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
           : item,
       ),
     )
-    setStatus('Unsaved')
+    setStatus('Chưa lưu')
   }
 
   async function saveConfig() {
@@ -157,9 +157,9 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
       const mergedFunctions = mergeCatalogFunctions(profileId, saved.functions ?? draft)
       setProfile({ ...saved, functions: mergedFunctions })
       setDraft(mergedFunctions)
-      setStatus('Saved')
+      setStatus('Đã lưu')
     } catch {
-      setStatus('Backend offline; chưa lưu được lên API.')
+      setStatus('Backend chưa kết nối; chưa lưu được lên API.')
     } finally {
       setBusy(false)
     }
@@ -181,7 +181,7 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
     <div className="space-y-5 py-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="max-w-2xl text-slate-400">
-          Chọn mục đích sử dụng để nạp catalog action tương ứng, sau đó chọn từng card để gán gesture nhanh.
+          Chọn mục đích sử dụng để nạp catalog hành động tương ứng, sau đó chọn từng card để gán cử chỉ nhanh.
         </p>
         <select
           value={profileId}
@@ -231,16 +231,16 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
       {editing && <MappingEditor mapping={editing} onCancel={() => setEditing(null)} onSave={commitEdit} />}
 
       <div className="sticky bottom-4 flex flex-wrap justify-end gap-3 rounded-2xl border border-white/10 bg-black/55 p-4 backdrop-blur">
-        <span className={`mr-auto self-center text-sm ${validation ? 'text-red-200' : status === 'Saved' ? 'text-emerald-200' : 'text-amber-200'}`}>
+        <span className={`mr-auto self-center text-sm ${validation ? 'text-red-200' : status === 'Đã lưu' ? 'text-emerald-200' : 'text-amber-200'}`}>
           {validation || status}
         </span>
         <span className="self-center rounded-full border border-cyan-300/20 px-3 py-1 text-xs text-cyan-100">
-          {draft.length} action
+          {draft.length} hành động
         </span>
         <button
           onClick={() => {
             setDraft(profile.functions ?? [])
-            setStatus('Saved')
+            setStatus('Đã lưu')
           }}
           className="rounded-xl border border-white/10 px-5 py-3 text-slate-300"
           type="button"
@@ -350,9 +350,9 @@ function GestureSuggestionPanel({
     <aside className="glass-panel sticky top-5 h-fit rounded-2xl p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">Gesture phù hợp</p>
+          <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">Cử chỉ phù hợp</p>
           <h3 className="mt-2 text-xl font-semibold text-white">{mapping.label}</h3>
-          <p className="mt-2 text-sm text-slate-400">{mapping.description ?? 'Chọn gesture thuận tiện để gán cho action này.'}</p>
+          <p className="mt-2 text-sm text-slate-400">{mapping.description ?? 'Chọn cử chỉ thuận tiện để gán cho hành động này.'}</p>
         </div>
         <button onClick={onClose} className="rounded-lg border border-white/10 p-2 text-slate-300" type="button" aria-label="Đóng gợi ý">
           <X className="h-4 w-4" />
@@ -387,7 +387,7 @@ function GestureSuggestionPanel({
 
       <button onClick={onEdit} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm text-slate-200" type="button">
         <Edit3 className="h-4 w-4" />
-        Chỉnh sửa chi tiết mapping
+        Chỉnh sửa chi tiết ánh xạ
       </button>
     </aside>
   )
@@ -409,27 +409,27 @@ function MappingEditor({ mapping, onCancel, onSave }: { mapping: FunctionMapping
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4">
       <div className="glass-panel w-full max-w-2xl rounded-2xl p-5">
-        <h3 className="text-xl font-semibold">Chỉnh sửa mapping</h3>
+        <h3 className="text-xl font-semibold">Chỉnh sửa ánh xạ</h3>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
-          <Field label="Label" value={draft.label} onChange={(value) => setDraft({ ...draft, label: value })} />
+          <Field label="Tên hiển thị" value={draft.label} onChange={(value) => setDraft({ ...draft, label: value })} />
           <Field label="Nhóm" value={draft.category ?? ''} onChange={(value) => setDraft({ ...draft, category: value })} />
-          <Field label="Gesture" value={draft.gesture} onChange={(value) => setDraft({ ...draft, gesture: value })} />
-          <Select label="Gesture event" value={draft.gesture_event ?? ''} options={allGestureEvents} onChange={(value) => setDraft({ ...draft, gesture_event: value })} />
-          <Select label="Action" value={draft.action} options={actionOptions} onChange={(value) => setDraft({ ...draft, action: value })} />
+          <Field label="Cử chỉ hiển thị" value={draft.gesture} onChange={(value) => setDraft({ ...draft, gesture: value })} />
+          <Select label="Mã sự kiện cử chỉ" value={draft.gesture_event ?? ''} options={allGestureEvents} onChange={(value) => setDraft({ ...draft, gesture_event: value })} />
+          <Select label="Mã hành động" value={draft.action} options={actionOptions} onChange={(value) => setDraft({ ...draft, action: value })} />
           <label className="flex items-center gap-3 rounded-xl border border-white/10 p-3 text-sm text-slate-200">
             <input checked={draft.enabled !== false} onChange={(event) => setDraft({ ...draft, enabled: event.target.checked })} type="checkbox" />
-            Enable function
+            Bật chức năng
           </label>
         </div>
         <Field label="Mô tả" value={draft.description ?? ''} onChange={(value) => setDraft({ ...draft, description: value })} />
         <label className="mt-3 block text-sm text-slate-300">
-          Payload JSON
+          Dữ liệu payload JSON
           <textarea value={payloadText} onChange={(event) => setPayloadText(event.target.value)} className="mt-2 h-32 w-full rounded-xl border border-white/10 bg-[#1c1b1d] p-3 font-mono text-xs text-white" />
         </label>
         {error && <p className="mt-3 text-sm text-red-200">{error}</p>}
         <div className="mt-5 flex justify-end gap-3">
           <button onClick={onCancel} className="rounded-xl border border-white/10 px-4 py-2 text-slate-300" type="button">Hủy</button>
-          <button onClick={save} className="rounded-xl bg-cyan-300 px-4 py-2 font-semibold text-black" type="button">Lưu mapping</button>
+          <button onClick={save} className="rounded-xl bg-cyan-300 px-4 py-2 font-semibold text-black" type="button">Lưu ánh xạ</button>
         </div>
       </div>
     </div>
@@ -459,8 +459,8 @@ function Select({ label, value, options, onChange }: { label: string; value: str
 function validateMappings(items: FunctionMapping[]) {
   const seen = new Set<string>()
   for (const item of items) {
-    if (!item.label || !item.gesture || !item.gesture_event || !item.action) return 'Thiếu label/gesture/action.'
-    if (!actionOptions.includes(item.action)) return `Action không hợp lệ: ${item.action}`
+    if (!item.label || !item.gesture || !item.gesture_event || !item.action) return 'Thiếu tên hiển thị/cử chỉ/mã hành động.'
+    if (!actionOptions.includes(item.action)) return `Mã hành động không hợp lệ: ${item.action}`
     if (item.enabled !== false) {
       if (seen.has(item.gesture_event)) return `Trùng gesture_event: ${item.gesture_event}`
       seen.add(item.gesture_event)
@@ -476,22 +476,22 @@ function fallbackSuggestions(mapping: FunctionMapping): GestureSuggestion[] {
       label: mapping.gesture,
       gesture_event: mapping.gesture_event ?? 'custom_gesture',
       gesture: mapping.gesture,
-      description: 'Gesture hiện tại của action này.',
+      description: 'Cử chỉ hiện tại của hành động này.',
       fit: 'Giữ nguyên nếu mapping đang hoạt động ổn.',
     },
     {
       id: `${mapping.id}_pinch`,
-      label: 'Pinch Tap',
+      label: 'Kẹp chạm nhanh',
       gesture_event: 'pinch_tap',
-      gesture: 'Pinch Tap',
+      gesture: 'Kẹp chạm nhanh',
       description: 'Kẹp nhanh ngón cái-ngón trỏ để xác nhận.',
-      fit: 'Lựa chọn phổ biến cho action dạng chọn.',
+      fit: 'Lựa chọn phổ biến cho hành động dạng chọn.',
     },
     {
       id: `${mapping.id}_pose`,
-      label: 'Finger Pose Shortcut',
+      label: 'Phím tắt theo số ngón',
       gesture_event: 'finger_count_shortcut',
-      gesture: 'Finger Pose Shortcut',
+      gesture: 'Phím tắt theo số ngón',
       description: 'Giữ số ngón cụ thể để gọi shortcut.',
       fit: 'Hợp tác vụ tùy chỉnh cần học qua hướng dẫn.',
     },

@@ -7,8 +7,8 @@ const browserFallback: AppVisibilityStatus = {
   supported: false,
   success: false,
   visible: true,
-  message: 'Dang chay trong browser nen hay minimize cua so thu cong sau khi runtime active.',
-  lastError: 'Browser mode fallback',
+  message: 'Đang chạy trong trình duyệt nên hãy thu nhỏ cửa sổ thủ công sau khi runtime hoạt động.',
+  lastError: 'Chế độ trình duyệt fallback',
 }
 
 export function getAppStatus() {

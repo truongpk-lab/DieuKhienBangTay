@@ -878,6 +878,27 @@ Tạo adapter để các phase sau gọi lại logic cũ.
 
 ---
 
+## Polish — Việt hóa tên và mô tả hành động
+
+### Checklist
+
+```text
+[x] Việt hóa label/description/fit/gesture trong frontend action catalog
+[x] Việt hóa category hiển thị: Con trỏ, Điều hướng, Tab, Bộ nhớ tạm, Hệ thống, Phát media, Âm thanh, Hiển thị, Di chuyển, Chiến đấu
+[x] Đồng bộ label/description/gesture trong profiles/configs/*.json
+[x] Giữ nguyên id, gesture_event, action, payload, shortcut/key và API schema
+[x] Việt hóa mock runtime/log/function mappings
+[x] Việt hóa nút/trạng thái thao tác trong Config, Training, Workflow, Dashboard, HUD và TerminalLog
+[x] Không sửa MouseController/demo_run.py hoặc thuật toán điều khiển chuột
+[x] npm run lint thành công bằng Windows cmd.exe
+[x] npm run build thành công bằng Windows cmd.exe
+[x] ProfileManager load office/entertainment/game_2d/custom thành công
+[x] py -3 -m compileall profiles backend thành công bằng Windows cmd.exe
+[x] rg kiểm tra chuỗi tiếng Anh còn lại chỉ còn match kỹ thuật/import/type, không phải text UI người dùng
+```
+
+---
+
 ## Definition of Done
 
 ```text

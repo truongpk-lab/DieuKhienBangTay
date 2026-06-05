@@ -105,9 +105,9 @@ export default function DashboardView({
     await runAction('clearLogs', async () => {
       try {
         syncLogs(await clearGestureLogs())
-        setStatusMessage('Gesture log da duoc xoa tren backend.')
+        setStatusMessage('Đã xóa nhật ký cử chỉ trên backend.')
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'Backend offline; không xóa log giả trên UI.')
+        setErrorMessage(error instanceof Error ? error.message : 'Backend chưa kết nối; không xóa log giả trên UI.')
       }
     })
   }
@@ -117,9 +117,9 @@ export default function DashboardView({
       try {
         const nextRuntime = runtimePaused ? await resumeRuntime() : await pauseRuntime()
         onRuntimeChange(nextRuntime)
-        setStatusMessage(runtimePaused ? 'Runtime resumed.' : 'Runtime paused.')
+        setStatusMessage(runtimePaused ? 'Đã tiếp tục runtime.' : 'Đã tạm dừng runtime.')
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'Backend offline; Pause/Resume không dùng mock.')
+        setErrorMessage(error instanceof Error ? error.message : 'Backend chưa kết nối; tạm dừng/tiếp tục cần API thật.')
       }
     })
   }
@@ -128,9 +128,9 @@ export default function DashboardView({
     await runAction('recenter', async () => {
       try {
         onRuntimeChange(await recenterRuntime())
-        setStatusMessage('Da gui lenh recenter/calibrate toi backend.')
+        setStatusMessage('Đã gửi lệnh căn lại/hiệu chỉnh tới backend.')
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'Backend offline; recenter không dùng mock.')
+        setErrorMessage(error instanceof Error ? error.message : 'Backend chưa kết nối; căn lại cần API thật.')
       }
     })
   }
@@ -141,7 +141,7 @@ export default function DashboardView({
       setAppHidden(!appHidden && result.data.success)
       setStatusMessage(result.data.message)
       if (result.fromFallback) {
-        setErrorMessage('Khong co desktop shell; hay thao tac cua so thu cong.')
+        setErrorMessage('Không có desktop shell; hãy thao tác cửa sổ thủ công.')
       }
     })
   }
@@ -151,14 +151,14 @@ export default function DashboardView({
       try {
         const result = await emergencyStopApp()
         if (!result.ok) {
-          throw new Error('Emergency stop failed')
+          throw new Error('Dừng khẩn cấp thất bại')
         }
         onRuntimeChange(await stopRuntime())
         await showAppWithFallback()
         setAppHidden(false)
-        setStatusMessage('Emergency stop da dung runtime va hien lai app.')
+        setStatusMessage('Đã dừng runtime và hiện lại ứng dụng.')
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'Backend offline; emergency stop cần backend thật.')
+        setErrorMessage(error instanceof Error ? error.message : 'Backend chưa kết nối; dừng khẩn cấp cần backend thật.')
       }
     })
   }
@@ -173,9 +173,9 @@ export default function DashboardView({
           currentProfileId: profile.id,
           currentProfile: profile.name,
         })
-        setStatusMessage(`Da kich hoat profile ${profile.name}.`)
+        setStatusMessage(`Đã kích hoạt hồ sơ ${profile.name}.`)
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : `Không thể đổi profile ${selectedProfile?.name ?? profileId}.`)
+        setErrorMessage(error instanceof Error ? error.message : `Không thể đổi hồ sơ ${selectedProfile?.name ?? profileId}.`)
       }
     })
   }
@@ -204,7 +204,7 @@ export default function DashboardView({
         const nextRuntime = result.executed ? await getRuntimeStatus() : runtime
         onRuntimeChange(nextRuntime)
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'Gemini command failed.')
+        setErrorMessage(error instanceof Error ? error.message : 'Lệnh Gemini thất bại.')
       }
     })
   }
@@ -226,16 +226,16 @@ export default function DashboardView({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Metric label="FPS" value={runtime.fps} suffix="" />
-            <Metric label="Accuracy" value={runtime.accuracy} suffix="%" />
+            <Metric label="Độ chính xác" value={runtime.accuracy} suffix="%" />
           </div>
         </div>
         <div className="glass-panel rounded-2xl p-5">
           <Info label="Hồ sơ" value={runtime.currentProfile} />
           <Info label="Cử chỉ" value={runtime.currentGesture} />
           <Info label="Hành động" value={runtime.currentAction} />
-          <Info label="Mic" value={runtime.micStatus ?? 'Microphone idle'} />
-          <Info label="AI" value={runtime.aiStatus ?? 'Gemini disabled'} />
-          <label className="mt-4 block text-xs font-semibold uppercase text-slate-500">Switch profile nhanh</label>
+          <Info label="Mic" value={runtime.micStatus ?? 'Micro đang nghỉ'} />
+          <Info label="AI" value={runtime.aiStatus ?? 'Gemini đang tắt'} />
+          <label className="mt-4 block text-xs font-semibold uppercase text-slate-500">Đổi hồ sơ nhanh</label>
           <select
             value={runtime.currentProfileId ?? profiles[0]?.id ?? 'office'}
             onChange={(event) => switchProfile(event.target.value)}
@@ -249,9 +249,9 @@ export default function DashboardView({
             ))}
           </select>
           <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-semibold">
-            <span className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-2 py-2 text-cyan-100">{runtime.handStatus ?? 'Hand idle'}</span>
-            <span className="rounded-xl border border-blue-300/20 bg-blue-300/10 px-2 py-2 text-blue-100">{runtime.cameraStatus ?? 'Camera idle'}</span>
-            <span className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-2 py-2 text-emerald-100">{runtime.commandConfidence ? `${Math.round(runtime.commandConfidence * 100)}% voice` : 'Voice ready'}</span>
+            <span className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-2 py-2 text-cyan-100">{runtime.handStatus ?? 'Tay đang nghỉ'}</span>
+            <span className="rounded-xl border border-blue-300/20 bg-blue-300/10 px-2 py-2 text-blue-100">{runtime.cameraStatus ?? 'Camera đang nghỉ'}</span>
+            <span className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-2 py-2 text-emerald-100">{runtime.commandConfidence ? `${Math.round(runtime.commandConfidence * 100)}% giọng nói` : 'Sẵn sàng nhận giọng nói'}</span>
           </div>
           {(statusMessage || errorMessage) && (
             <div className="mt-4 flex gap-3 rounded-xl border border-cyan-300/15 bg-cyan-300/10 p-3 text-sm text-cyan-50">
@@ -263,7 +263,7 @@ export default function DashboardView({
             type="button"
             onClick={toggleRuntime}
             disabled={isBusy}
-            aria-label={runtime.active ? 'Stop runtime' : 'Start runtime'}
+            aria-label={runtime.active ? 'Dừng runtime' : 'Bật runtime'}
             animate={{ boxShadow: ['0 0 0 0 rgba(239,68,68,0.25)', '0 0 0 22px rgba(239,68,68,0)'] }}
             transition={{ duration: 1.5, repeat: Infinity }}
             className={`mx-auto mt-6 grid h-28 w-28 place-items-center rounded-full ring-8 transition disabled:cursor-wait disabled:opacity-60 ${runtimeActive ? 'bg-red-500/15 text-red-100 ring-red-500/5' : 'bg-cyan-300/15 text-cyan-100 ring-cyan-300/5'}`}
@@ -272,34 +272,34 @@ export default function DashboardView({
           </motion.button>
           <div className="mt-5 grid grid-cols-2 gap-2">
             <ActionButton
-              label={runtimePaused ? 'Resume' : 'Pause'}
+              label={runtimePaused ? 'Tiếp tục' : 'Tạm dừng'}
               icon={runtimePaused ? Play : Pause}
               onClick={togglePause}
               loading={activeAction === 'pause'}
               disabled={!runtimeActive || isBusy}
             />
             <ActionButton
-              label="Recenter"
+              label="Căn lại"
               icon={RotateCcw}
               onClick={recenter}
               loading={activeAction === 'recenter'}
               disabled={!runtimeActive || isBusy}
             />
             <ActionButton
-              label={appHidden ? 'Show app' : 'Hide app'}
+              label={appHidden ? 'Hiện app' : 'Ẩn app'}
               icon={appHidden ? Eye : EyeOff}
               onClick={toggleVisibility}
               loading={activeAction === 'visibility'}
               disabled={isBusy}
             />
             <ActionButton
-              label={micActive ? 'Stop mic' : 'Start mic'}
+              label={micActive ? 'Tắt mic' : 'Bật mic'}
               icon={micActive ? MicOff : Mic}
               onClick={toggleMic}
               loading={activeAction === 'mic'}
               disabled={isBusy}
             />
-            <ActionButton label="Settings" icon={Settings} onClick={onOpenSettings} disabled={isBusy} />
+            <ActionButton label="Cài đặt" icon={Settings} onClick={onOpenSettings} disabled={isBusy} />
             <div className="col-span-2 grid gap-2 sm:grid-cols-[1fr_auto]">
               <input
                 value={voiceText}
@@ -313,7 +313,7 @@ export default function DashboardView({
                 onClick={runVoiceCommand}
                 className="rounded-xl bg-cyan-300 px-4 py-2 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {activeAction === 'voice' ? 'Sending' : 'Gemini'}
+                {activeAction === 'voice' ? 'Đang gửi' : 'Gemini'}
               </button>
             </div>
             <button
@@ -323,7 +323,7 @@ export default function DashboardView({
               className="col-span-2 flex items-center justify-center gap-2 rounded-xl border border-red-300/25 bg-red-500/10 px-3 py-3 text-sm font-semibold text-red-100 transition hover:bg-red-500/15 disabled:cursor-wait disabled:opacity-60"
             >
               {activeAction === 'emergency' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldAlert className="h-4 w-4" />}
-              Emergency stop
+              Dừng khẩn cấp
             </button>
           </div>
         </div>
@@ -333,7 +333,7 @@ export default function DashboardView({
           logs={visibleLogs}
           onClear={clearLogs}
           clearDisabled={isBusy}
-          clearLabel={activeAction === 'clearLogs' ? 'Clearing' : 'Clear'}
+          clearLabel={activeAction === 'clearLogs' ? 'Đang xóa' : 'Xóa'}
         />
       </div>
     </div>

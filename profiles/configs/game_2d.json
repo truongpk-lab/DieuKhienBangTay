@@ -1,7 +1,7 @@
 {
   "id": "game_2d",
   "name": "Game 2D",
-  "description": "Ánh xạ hành động nhanh cho game platformer.",
+  "description": "Ánh xạ hành động nhanh cho game đi cảnh 2D.",
   "mouse": {
     "speed": 1.8,
     "sensitivity": 82,
@@ -17,7 +17,7 @@
       "id": "move_left",
       "label": "Di chuyển trái",
       "gesture_event": "tilt_left",
-      "gesture": "Tilt Left",
+      "gesture": "Nghiêng sang trái",
       "action": "game.move_left",
       "enabled": true,
       "payload": {
@@ -28,7 +28,7 @@
       "id": "move_right",
       "label": "Di chuyển phải",
       "gesture_event": "tilt_right",
-      "gesture": "Tilt Right",
+      "gesture": "Nghiêng sang phải",
       "action": "game.move_right",
       "enabled": true,
       "payload": {
@@ -39,7 +39,7 @@
       "id": "jump",
       "label": "Nhảy",
       "gesture_event": "swipe_up",
-      "gesture": "Swipe Up",
+      "gesture": "Vuốt lên",
       "action": "game.jump",
       "enabled": true,
       "payload": {
@@ -50,7 +50,7 @@
       "id": "crouch",
       "label": "Cúi",
       "gesture_event": "swipe_down",
-      "gesture": "Swipe Down",
+      "gesture": "Vuốt xuống",
       "action": "game.crouch",
       "enabled": true,
       "payload": {
@@ -61,7 +61,7 @@
       "id": "attack",
       "label": "Tấn công",
       "gesture_event": "rapid_punch",
-      "gesture": "Rapid Punch",
+      "gesture": "Đấm nhanh",
       "action": "game.attack",
       "enabled": true,
       "payload": {
@@ -72,7 +72,7 @@
       "id": "block",
       "label": "Đỡ đòn",
       "gesture_event": "closed_fist_hold",
-      "gesture": "Closed Fist Hold",
+      "gesture": "Nắm tay giữ",
       "action": "game.block",
       "enabled": true,
       "payload": {
@@ -81,9 +81,9 @@
     },
     {
       "id": "dash",
-      "label": "Dash",
+      "label": "Lướt nhanh",
       "gesture_event": "swipe_double",
-      "gesture": "Double Swipe",
+      "gesture": "Vuốt đôi",
       "action": "game.dash",
       "enabled": true,
       "payload": {
@@ -92,9 +92,9 @@
     },
     {
       "id": "skill_1",
-      "label": "Skill 1",
+      "label": "Kỹ năng 1",
       "gesture_event": "pinch_hold",
-      "gesture": "Pinch Hold",
+      "gesture": "Kẹp giữ",
       "action": "game.skill_1",
       "enabled": true,
       "payload": {
@@ -105,7 +105,7 @@
       "id": "move_up",
       "label": "Di chuyển lên",
       "gesture_event": "tilt_up",
-      "gesture": "Tilt Up",
+      "gesture": "Nghiêng lên",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {
@@ -116,7 +116,7 @@
       "id": "move_down",
       "label": "Di chuyển xuống",
       "gesture_event": "tilt_down",
-      "gesture": "Tilt Down",
+      "gesture": "Nghiêng xuống",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {
@@ -127,7 +127,7 @@
       "id": "heavy_attack",
       "label": "Tấn công mạnh",
       "gesture_event": "closed_fist_punch",
-      "gesture": "Closed Fist Punch",
+      "gesture": "Đấm bằng nắm tay",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {
@@ -138,7 +138,7 @@
       "id": "interact",
       "label": "Tương tác",
       "gesture_event": "pinch_tap_interact",
-      "gesture": "Pinch Tap",
+      "gesture": "Kẹp chạm nhanh",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {
@@ -147,9 +147,9 @@
     },
     {
       "id": "skill_2",
-      "label": "Skill 2",
+      "label": "Kỹ năng 2",
       "gesture_event": "pinch_hold_skill_2",
-      "gesture": "Pinch Hold Two Fingers",
+      "gesture": "Kẹp giữ hai ngón",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {
@@ -158,9 +158,9 @@
     },
     {
       "id": "pause",
-      "label": "Pause game",
+      "label": "Tạm dừng game",
       "gesture_event": "open_close_palm_pause",
-      "gesture": "Open Close Palm",
+      "gesture": "Mở/đóng bàn tay",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {
@@ -169,9 +169,9 @@
     },
     {
       "id": "inventory",
-      "label": "Inventory",
+      "label": "Túi đồ",
       "gesture_event": "three_finger_pose_inventory",
-      "gesture": "Three Finger Pose",
+      "gesture": "Giữ ba ngón",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {
@@ -180,9 +180,9 @@
     },
     {
       "id": "map",
-      "label": "Map",
+      "label": "Bản đồ",
       "gesture_event": "four_finger_pose_map",
-      "gesture": "Four Finger Pose",
+      "gesture": "Giữ bốn ngón",
       "action": "keyboard.press",
       "enabled": true,
       "payload": {

@@ -1,7 +1,7 @@
 {
   "id": "entertainment",
   "name": "Giải trí",
-  "description": "Điều khiển phát media, chuyển video và âm lượng.",
+  "description": "Điều khiển phát nội dung, chuyển video và âm lượng.",
   "mouse": {
     "speed": 1.2,
     "sensitivity": 70,
@@ -15,9 +15,9 @@
   "functions": [
     {
       "id": "play_pause",
-      "label": "Play/Pause",
+      "label": "Phát / Tạm dừng",
       "gesture_event": "open_close_palm",
-      "gesture": "Open Close Palm",
+      "gesture": "Mở/đóng bàn tay",
       "action": "media.play_pause",
       "enabled": true,
       "payload": {
@@ -26,9 +26,9 @@
     },
     {
       "id": "next_video",
-      "label": "Next video",
+      "label": "Video tiếp theo",
       "gesture_event": "swipe_right",
-      "gesture": "Swipe Right",
+      "gesture": "Vuốt phải",
       "action": "media.next",
       "enabled": true,
       "payload": {
@@ -37,9 +37,9 @@
     },
     {
       "id": "previous_video",
-      "label": "Previous video",
+      "label": "Video trước",
       "gesture_event": "swipe_left",
-      "gesture": "Swipe Left",
+      "gesture": "Vuốt trái",
       "action": "media.previous",
       "enabled": true,
       "payload": {
@@ -50,7 +50,7 @@
       "id": "seek_forward",
       "label": "Tua tới",
       "gesture_event": "two_finger_swipe_right",
-      "gesture": "Two Finger Swipe Right",
+      "gesture": "Vuốt hai ngón sang phải",
       "action": "media.seek_forward",
       "enabled": true,
       "payload": {
@@ -62,7 +62,7 @@
       "id": "seek_backward",
       "label": "Tua lùi",
       "gesture_event": "two_finger_swipe_left",
-      "gesture": "Two Finger Swipe Left",
+      "gesture": "Vuốt hai ngón sang trái",
       "action": "media.seek_backward",
       "enabled": true,
       "payload": {
@@ -74,7 +74,7 @@
       "id": "volume_up",
       "label": "Tăng âm lượng",
       "gesture_event": "swipe_up",
-      "gesture": "Swipe Up",
+      "gesture": "Vuốt lên",
       "action": "media.volume_up",
       "enabled": true,
       "payload": {
@@ -85,7 +85,7 @@
       "id": "volume_down",
       "label": "Giảm âm lượng",
       "gesture_event": "swipe_down",
-      "gesture": "Swipe Down",
+      "gesture": "Vuốt xuống",
       "action": "media.volume_down",
       "enabled": true,
       "payload": {
@@ -94,9 +94,9 @@
     },
     {
       "id": "fullscreen",
-      "label": "Fullscreen",
+      "label": "Toàn màn hình",
       "gesture_event": "open_palm_hold",
-      "gesture": "Open Palm Hold",
+      "gesture": "Giữ bàn tay mở",
       "action": "media.fullscreen",
       "enabled": true,
       "payload": {
@@ -105,9 +105,9 @@
     },
     {
       "id": "mute",
-      "label": "Mute/Unmute",
+      "label": "Tắt / bật tiếng",
       "gesture_event": "thumbs_up_mute",
-      "gesture": "Thumbs Up Toggle",
+      "gesture": "Giơ ngón cái để bật/tắt",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {
@@ -116,9 +116,9 @@
     },
     {
       "id": "mini_player",
-      "label": "Mini player",
+      "label": "Trình phát thu nhỏ",
       "gesture_event": "two_finger_pose_mini",
-      "gesture": "Two Finger Pose",
+      "gesture": "Giữ hai ngón",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {
@@ -129,7 +129,7 @@
       "id": "captions",
       "label": "Phụ đề",
       "gesture_event": "three_finger_pose_captions",
-      "gesture": "Three Finger Pose",
+      "gesture": "Giữ ba ngón",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {
@@ -140,7 +140,7 @@
       "id": "speed_up",
       "label": "Tăng tốc độ phát",
       "gesture_event": "pinch_move_right_speed",
-      "gesture": "Pinch Move Right",
+      "gesture": "Kẹp rồi di chuyển sang phải",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {
@@ -151,7 +151,7 @@
       "id": "speed_down",
       "label": "Giảm tốc độ phát",
       "gesture_event": "pinch_move_left_speed",
-      "gesture": "Pinch Move Left",
+      "gesture": "Kẹp rồi di chuyển sang trái",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {
@@ -160,9 +160,9 @@
     },
     {
       "id": "next_frame",
-      "label": "Frame kế tiếp",
+      "label": "Khung hình kế tiếp",
       "gesture_event": "finger_pose_next_frame",
-      "gesture": "Finger Pose Next",
+      "gesture": "Giữ ngón để tới khung kế tiếp",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {
@@ -171,9 +171,9 @@
     },
     {
       "id": "previous_frame",
-      "label": "Frame trước",
+      "label": "Khung hình trước",
       "gesture_event": "finger_pose_previous_frame",
-      "gesture": "Finger Pose Previous",
+      "gesture": "Giữ ngón để lùi khung",
       "action": "keyboard.hotkey",
       "enabled": true,
       "payload": {

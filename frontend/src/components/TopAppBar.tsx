@@ -24,7 +24,7 @@ export default function TopAppBar({ title, runtime, backendOnline }: TopAppBarPr
           {runtime.currentProfile}
         </div>
         <div className={`hidden rounded-full border px-3 py-2 text-sm font-medium lg:block ${backendOnline ? 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100' : 'border-amber-300/25 bg-amber-300/10 text-amber-100'}`}>
-          {backendOnline ? 'Backend online' : 'Backend offline'}
+          {backendOnline ? 'Backend đang kết nối' : 'Backend chưa kết nối'}
         </div>
         <button type="button" className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.03] text-slate-300">
           <Bell className="h-4 w-4" />

@@ -2,7 +2,7 @@ import { Brain, Gauge, Hand, Layers, MousePointer2, Settings } from 'lucide-reac
 import type { AppView } from '../types'
 
 const items: Array<{ id: AppView; label: string; icon: typeof Gauge }> = [
-  { id: 'dashboard', label: 'Dashboard', icon: Gauge },
+  { id: 'dashboard', label: 'Bảng điều khiển', icon: Gauge },
   { id: 'onboarding', label: 'Thiết lập ban đầu', icon: Hand },
   { id: 'config', label: 'Cấu hình', icon: Settings },
   { id: 'training', label: 'Huấn luyện cử chỉ', icon: Brain },
