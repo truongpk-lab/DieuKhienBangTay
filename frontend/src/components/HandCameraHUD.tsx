@@ -1,12 +1,16 @@
 import { motion } from 'motion/react'
+import type { HandLandmark } from '../types'
 import HandSkeleton from './HandSkeleton'
 
 type HandCameraHUDProps = {
   compact?: boolean
   showWarnings?: boolean
+  landmarks?: HandLandmark[]
 }
 
-export default function HandCameraHUD({ compact = false, showWarnings = false }: HandCameraHUDProps) {
+export default function HandCameraHUD({ compact = false, showWarnings = false, landmarks }: HandCameraHUDProps) {
+  const hasLiveLandmarks = landmarks?.length === 21
+
   return (
     <div className={`relative overflow-hidden rounded-2xl bg-[#0e0e10] ${compact ? 'h-[340px]' : 'h-[470px]'}`}>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,242,255,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(0,242,255,0.07)_1px,transparent_1px)] bg-[size:50px_50px]" />
@@ -29,8 +33,13 @@ export default function HandCameraHUD({ compact = false, showWarnings = false }:
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute left-1/2 top-1/2 h-[72%] w-[42%] -translate-x-1/2 -translate-y-1/2"
       >
-        <HandSkeleton />
+        <HandSkeleton landmarks={landmarks} />
       </motion.div>
+      {hasLiveLandmarks && (
+        <div className="absolute left-4 top-14 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 font-mono text-xs text-cyan-100">
+          21 LM
+        </div>
+      )}
       {showWarnings && (
         <div className="absolute bottom-4 right-4 max-w-[220px] space-y-2 text-xs">
           <div className="rounded-xl border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-amber-100">

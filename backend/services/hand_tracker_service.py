@@ -103,6 +103,7 @@ class HandTrackerService:
         self._gestures = None
         self._mouse = None
         self._hand_was_present = False
+        self.state.hand_landmarks = []
         self.state.hand_status = "Hand tracker stopped"
         self.state.add_log("system", self.state.hand_status)
         return self.status()
@@ -147,6 +148,7 @@ class HandTrackerService:
                         self.state.add_log("detection", "Hand lost")
                     self._hand_was_present = False
                     self.state.hand_status = "No hand detected"
+                    self.state.hand_landmarks = []
                     self._classifier.reset()
                     self._gestures.handle_hand_lost()
                     self._update_timing(started)
@@ -159,6 +161,7 @@ class HandTrackerService:
                 self._hand_was_present = True
                 self.state.hand_status = "Hand detected"
                 hand_landmarks = hands[0]
+                self.state.hand_landmarks = self._serialize_landmarks(hand_landmarks.landmark)
                 frame_h, frame_w = frame.shape[:2]
                 box = self._get_bounding_box(hand_landmarks.landmark, frame_w, frame_h)
                 if box is None:
@@ -266,6 +269,16 @@ class HandTrackerService:
             "pinch_distance": pinch_distance,
             "confidence": max(0.0, min(1.0, 1.0 - min(pinch_distance, 1.0))),
         }
+
+    def _serialize_landmarks(self, landmarks) -> list[dict[str, float]]:
+        return [
+            {
+                "x": float(max(0.0, min(1.0, point.x))),
+                "y": float(max(0.0, min(1.0, point.y))),
+                "z": float(point.z),
+            }
+            for point in list(landmarks)[:21]
+        ]
 
     def _action_label(self, event: str | None, stable_label: str) -> str:
         labels = {

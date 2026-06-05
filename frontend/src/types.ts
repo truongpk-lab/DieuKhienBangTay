@@ -33,6 +33,13 @@ export type RuntimeStatus = {
   mode?: string
   lastError?: string | null
   workflow?: WorkflowState
+  handLandmarks?: HandLandmark[]
+}
+
+export type HandLandmark = {
+  x: number
+  y: number
+  z: number
 }
 
 export type AppVisibilityStatus = {

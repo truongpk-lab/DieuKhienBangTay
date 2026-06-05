@@ -216,7 +216,7 @@ export default function DashboardView({
           <h2 className="text-lg font-semibold">Nguồn Video</h2>
           <span className="rounded-full bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-200">LIVE</span>
         </div>
-        <HandCameraHUD />
+        <HandCameraHUD landmarks={runtime.handLandmarks} />
       </div>
       <div className="space-y-5">
         <div className="glass-panel rounded-2xl p-5">
