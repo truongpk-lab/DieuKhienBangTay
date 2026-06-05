@@ -102,6 +102,83 @@
       "payload": {
         "shortcut": "f"
       }
+    },
+    {
+      "id": "mute",
+      "label": "Mute/Unmute",
+      "gesture_event": "thumbs_up_mute",
+      "gesture": "Thumbs Up Toggle",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "shortcut": "m"
+      }
+    },
+    {
+      "id": "mini_player",
+      "label": "Mini player",
+      "gesture_event": "two_finger_pose_mini",
+      "gesture": "Two Finger Pose",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "shortcut": "i"
+      }
+    },
+    {
+      "id": "captions",
+      "label": "Phụ đề",
+      "gesture_event": "three_finger_pose_captions",
+      "gesture": "Three Finger Pose",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "shortcut": "c"
+      }
+    },
+    {
+      "id": "speed_up",
+      "label": "Tăng tốc độ phát",
+      "gesture_event": "pinch_move_right_speed",
+      "gesture": "Pinch Move Right",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "shortcut": "shift+."
+      }
+    },
+    {
+      "id": "speed_down",
+      "label": "Giảm tốc độ phát",
+      "gesture_event": "pinch_move_left_speed",
+      "gesture": "Pinch Move Left",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "shortcut": "shift+,"
+      }
+    },
+    {
+      "id": "next_frame",
+      "label": "Frame kế tiếp",
+      "gesture_event": "finger_pose_next_frame",
+      "gesture": "Finger Pose Next",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "shortcut": "."
+      }
+    },
+    {
+      "id": "previous_frame",
+      "label": "Frame trước",
+      "gesture_event": "finger_pose_previous_frame",
+      "gesture": "Finger Pose Previous",
+      "action": "keyboard.hotkey",
+      "enabled": true,
+      "payload": {
+        "shortcut": ","
+      }
     }
   ]
 }

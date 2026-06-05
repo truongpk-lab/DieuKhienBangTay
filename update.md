@@ -74,7 +74,7 @@ Sau mỗi phase:
 [x] Dashboard realtime mock có camera HUD, hand skeleton, gesture log
 [x] Configuration Page để gán chức năng với gesture/action
 [x] Gesture Training Page để thu mẫu ảnh/video và train cử chỉ
-[x] Detailed Workflow Page cho Pinch Drag Drop
+[x] Hướng dẫn thao tác theo chế độ
 [x] Giữ lại hành vi điều khiển chuột hiện tại
 [ ] Thêm adapter để dùng lại MouseController hiện tại
 [x] Thêm profile: Văn phòng, Giải trí, Game 2D, Tùy chỉnh
@@ -101,7 +101,7 @@ Phase 4 — Dashboard UI
 Phase 5 — Onboarding UI
 Phase 6 — Configuration UI
 Phase 7 — Training UI
-Phase 8 — Workflow UI
+Phase 8 — Hướng dẫn thao tác UI
 Phase 9 — UI polish/build
 ```
 
@@ -399,33 +399,46 @@ Không sửa logic chuột. Build kiểm tra.
 
 ---
 
-## Phase 8 — Detailed Workflow UI
+## Phase 8 — Hướng Dẫn Thao Tác UI
 
 ### Checklist
 
 ```text
 [x] Tạo views/WorkflowView.tsx
-[x] Tiêu đề QUY TRÌNH KÉO THẢ (PINCH DRAG DROP)
-[x] Stepper ngang 5 bước
-[x] Bước 1 Kẹp ngón
-[x] Bước 2 Giữ
-[x] Bước 3 Di chuyển tay active
-[x] Bước 4 Thả ngón
-[x] Bước 5 Hoàn thành
-[x] Đường nối bước 1 → 3 sáng cyan
-[x] Bước active có radar pulse
-[x] Card trạng thái hiện tại
-[x] Badge Sensor: Active
-[x] Badge Latency: 12ms
+[x] Tiêu đề Hướng dẫn thao tác
+[x] Thanh chọn chế độ Văn phòng, Giải trí, Game 2D, Tùy chỉnh
+[x] Thư viện chức năng theo chế độ
+[x] Mô phỏng điểm tay bằng HandSkeleton
+[x] Pulse/radar bằng Framer Motion
+[x] Checklist trước khi dùng
+[x] Lỗi thường gặp
+[x] Badge độ khó/latency/cảm biến
+[x] Tín hiệu gần đây
+[x] Không dùng realtime workflow API/reset/test trong trang hướng dẫn
 [x] npm run build thành công
 ```
 
 ### Prompt
 
 ```text
-Chỉ thực hiện Phase 8 — Detailed Workflow UI.
-Tạo WorkflowView theo ACV_GESTURE_SPEC.md. Stepper 5 bước kéo-thả, bước 3 active có pulse/radar bằng Framer Motion.
+Chỉ thực hiện Phase 8 — Hướng Dẫn Thao Tác UI.
+Tạo WorkflowView theo ACV_GESTURE_SPEC.md. Có 4 chế độ, thư viện chức năng, mô phỏng HandSkeleton, checklist, lỗi thường gặp và pulse/radar bằng Framer Motion.
 Không sửa logic chuột. Build kiểm tra.
+```
+
+### Cập nhật phiên 2026-06-05 — Hướng Dẫn Thao Tác
+
+```text
+[x] Đổi nhãn trang workflow thành Hướng dẫn thao tác
+[x] Giữ route/component workflow để tương thích layout 5 trang
+[x] Thêm thanh chọn chế độ Văn phòng, Giải trí, Game 2D, Tùy chỉnh
+[x] Thêm mô phỏng điểm tay bằng HandSkeleton và pulse/radar Framer Motion
+[x] Thêm thư viện chức năng, quy trình thực hành, checklist, lỗi thường gặp bằng tiếng Việt
+[x] Không dùng realtime workflow API/reset/test trong trang hướng dẫn
+[x] Không sửa logic MouseController/demo/backend runtime
+[x] npm install thành công bằng Windows runtime
+[x] npm run build thành công bằng Windows runtime
+[x] Đồng bộ ACV_GESTURE_SPEC.md, ripgrep.md và docs/button_inventory.md theo Hướng Dẫn Thao Tác
 ```
 
 ---
@@ -502,6 +515,44 @@ Dùng lại hàm điều khiển chuột hiện tại, không viết lại từ 
 [x] Không đổi thuật toán/logic ảnh hưởng hiệu suất
 [x] demo_run.py cũ vẫn chạy được
 [x] Test import adapter
+```
+
+### Kiểm tra phiên 2026-06-04 — DIEU_KHIEN_CHUOT là logic chuột chính
+
+```text
+[x] actions.mouse_controller không còn chứa logic MouseController duplicate
+[x] MouseControlAdapter dùng MouseController canonical
+[x] Không còn class MouseController duplicate trong actions/
+[x] Test import adapter xác nhận dùng class canonical
+[x] Test action mapper bằng event giả vẫn chạy qua adapter
+[x] compileall Python cho DIEU_KHIEN_CHUOT/actions/core/backend/profiles thành công
+```
+
+### Kiểm tra phiên 2026-06-04 — acv_runtime là runtime canonical
+
+```text
+[x] Tạo package acv_runtime/ từ logic DIEU_KHIEN_CHUOT/hand_mouse
+[x] DIEU_KHIEN_CHUOT/hand_mouse giữ wrapper tương thích
+[x] hand_mouse/ top-level giữ wrapper tương thích cho test/import cũ
+[x] actions.mouse_controller trỏ về acv_runtime.mouse
+[x] Backend HandTrackerService dùng HandGestureClassifier + GestureActionState canonical
+[x] Vòng nhận diện thật không execute chuột qua ActionMapper để tránh double-action
+[x] TerminalLog chỉ render 30 dòng gần nhất và hiển thị 2-3 dòng mới nhất
+[x] Test gesture_state cũ bằng Windows py -3 thành công
+[x] Test frontend build bằng Windows npm thành công
+```
+
+### Kiểm tra phiên 2026-06-04 — backend/hand_runtime là runtime canonical
+
+```text
+[x] Tạo backend/hand_runtime/ chứa logic điều khiển chuột canonical
+[x] Copy feature utils vào backend/hand_runtime/feature_utils.py
+[x] Copy model active vào backend/hand_runtime/trained_model/
+[x] Backend HandTrackerService import trực tiếp backend.hand_runtime
+[x] actions.mouse_controller trỏ về backend.hand_runtime.mouse
+[x] acv_runtime/ chỉ còn compatibility wrapper
+[x] hand_mouse/ và DIEU_KHIEN_CHUOT/hand_mouse chỉ còn compatibility wrapper
+[x] Backend runtime không còn phụ thuộc import vào DIEU_KHIEN_CHUOT
 ```
 
 ### Prompt
@@ -688,6 +739,40 @@ Tạo adapter để các phase sau gọi lại logic cũ.
 [x] Test click
 [x] Test kéo-thả
 [x] Xác nhận MouseController cũ không bị đổi hành vi
+```
+
+---
+
+## Bugfix — Dashboard scroll stability
+
+### Checklist
+
+```text
+[x] Sửa TerminalLog auto-scroll không kéo cả Dashboard xuống dưới
+[x] Khóa app shell trong viewport, chỉ scroll nội dung chính
+[x] Sửa DashboardAction bị gán nhầm giữa Hide app, Mic, Profile và Gemini
+[x] npm run build thành công bằng Windows cmd.exe
+```
+
+---
+
+## Enhancement — Config action catalog theo mục đích
+
+### Checklist
+
+```text
+[x] Config dropdown chỉ hiển thị 3 mục đích: Văn phòng, Giải trí, Game 2D
+[x] Thêm catalog local cho Config UI với trên 10 action mỗi mục đích
+[x] Đổi mục đích sẽ chuyển grid action tương ứng
+[x] Thêm panel gợi ý gesture bên phải, mặc định ẩn đến khi chọn action
+[x] Mỗi action có ít nhất 3 gesture gợi ý và nút Áp dụng
+[x] Config UI fallback sang catalog local khi backend offline, không còn grid rỗng do Failed to fetch
+[x] Bổ sung entertainment/game_2d profile JSON để backend online trả về trên 10 action
+[x] Không sửa MouseController/demo_run.py trong enhancement này
+[x] npm install thành công bằng Windows cmd.exe
+[x] npm run build thành công bằng Windows cmd.exe
+[x] py -3 -m compileall profiles backend thành công bằng Windows cmd.exe
+[x] ProfileManager load office/entertainment/game_2d thành công với 16/15/16 action
 ```
 
 ---
