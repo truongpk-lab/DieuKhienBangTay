@@ -489,6 +489,20 @@ Không sửa logic chuột. Build kiểm tra.
 [x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay && py -3 -m compileall backend" thành công
 ```
 
+### Cập nhật phiên 2026-06-05 — Fix CI lint Onboarding
+
+```text
+[x] Tái hiện CI #8 lỗi tại Frontend CI - React Vite / Run frontend lint
+[x] Sửa OnboardingView không gọi startBrowserPreview trực tiếp trong effect
+[x] Bỏ effect setState đồng bộ camera_id, thay bằng selectedCameraId dẫn xuất
+[x] Submit/profile save dùng camera_id đã normalize
+[x] Không sửa MouseController/demo_run.py hoặc thuật toán điều khiển chuột
+[x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay\frontend && npm run lint" thành công
+[x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay\frontend && npm run build" thành công
+[x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay && py -3 -m compileall backend" thành công
+[x] cmd.exe /C "cd /d D:\github\link\DieuKhienBangTay && py -3 run_desktop.py --self-test" thành công
+```
+
 ---
 
 ## Phase 9 — UI polish và build final
