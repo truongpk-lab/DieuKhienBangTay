@@ -808,6 +808,26 @@ Tạo adapter để các phase sau gọi lại logic cũ.
 
 ---
 
+## Bugfix — CI lint compatibility
+
+### Checklist
+
+```text
+[x] Xác nhận remote origin/update đã có commit 62777df
+[x] Tái hiện lỗi CI frontend bằng npm run lint
+[x] Sửa ConfigView không setState đồng bộ trong effect khi đổi profile
+[x] Sửa DashboardView không mirror logs bằng effect
+[x] Sửa WorkflowView không setState đồng bộ trong effect khi đổi chế độ hướng dẫn
+[x] npm --prefix frontend run lint thành công bằng Windows cmd.exe
+[x] npm --prefix frontend run build thành công bằng Windows cmd.exe
+[x] py -3 -m compileall DIEU_KHIEN_CHUOT thành công bằng Windows cmd.exe
+[x] Check đủ file legacy mà CI yêu cầu trong DIEU_KHIEN_CHUOT
+[x] py -3 run_desktop.py --self-test thành công bằng Windows cmd.exe
+[x] Không sửa MouseController/demo_run.py hoặc thuật toán điều khiển chuột
+```
+
+---
+
 ## Definition of Done
 
 ```text

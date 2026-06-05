@@ -59,16 +59,11 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
   const [editing, setEditing] = useState<FunctionMapping | null>(null)
   const [selectedMappingId, setSelectedMappingId] = useState<string | null>(null)
   const [status, setStatus] = useState('Đang tải cấu hình...')
-  const [busy, setBusy] = useState(false)
+  const [busy, setBusy] = useState(true)
 
   useEffect(() => {
     let canceled = false
     const local = getLocalProfileDetail(profileId)
-    setProfile(local)
-    setDraft(local.functions ?? [])
-    setSelectedMappingId(null)
-    setStatus('Đang tải cấu hình...')
-    setBusy(true)
 
     getProfile(profileId)
       .then((data) => {
@@ -172,6 +167,12 @@ export default function ConfigView({ profiles = [] }: { profiles?: Profile[] }) 
 
   function changeProfile(value: string) {
     if (isConfigProfileId(value)) {
+      const local = getLocalProfileDetail(value)
+      setProfile(local)
+      setDraft(local.functions ?? [])
+      setSelectedMappingId(null)
+      setStatus('Đang tải cấu hình...')
+      setBusy(true)
       setProfileId(value)
     }
   }
